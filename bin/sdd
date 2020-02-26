@@ -2,7 +2,9 @@
 
 # Main executable of the sdd program
 
-SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+set -eo pipefail
+
+SCRIPTDIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
 
 # shellcheck source=../lib/sdd/framework/utils.bash
 source "$SCRIPTDIR"/../lib/sdd/framework/utils.bash
@@ -16,38 +18,42 @@ export SDD_DATA_DIR
 mkdir -p "$SDD_DATA_DIR"/apps
 
 main() {
-    local command=$1
-    local exit_code=0
+    local command="$1"
 
-    if [ "$command" = "install" ]; then
-        shift
-        utils_install "$@"
-        exit_code=$?
-    elif [ "$command" = "upgrade" ]; then
-        shift
-        utils_upgrade "$@"
-        exit_code=$?
-    elif [ "$command" = "uninstall" ]; then
-        shift
-        utils_uninstall "$@"
-        exit_code=$?
-    elif [ "$command" = "list" ]; then
-        shift
-        utils_list "$@"
-        exit_code=$?
-    elif [ "$command" = "--help" ]; then
-        utils_usage
-    elif [ "$command" = "--version" ]; then
-        utils_version
-        exit_code=$?
-    elif [ ! -z "$command" ]; then
-        printf 'Unknown command "%s"\n' "$command" >&2
-        exit_code=127
-    else
-        utils_usage
-    fi
+    case "$command" in
+        install|i)
+            shift
+            utils_install "$@"
+            ;;
+        upgrade|up)
+            shift
+            utils_upgrade "$@"
+            ;;
+        uninstall|un)
+            shift
+            utils_uninstall "$@"
+            ;;
+        list|l)
+            shift
+            utils_list "$@"
+            ;;
+        --help|-h)
+            utils_usage
+            ;;
+        --version|-v)
+            utils_version
+            ;;
+        ?*)
+            printf 'Unknown command "%s"\n' "$command" >&2
+            exit 2
+            ;;
+        *)
+            utils_usage
+    esac
 
-    exit $exit_code
+    exit 0
 }
 
 main "$@"
+
+exit 1
