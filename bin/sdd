@@ -1,21 +1,376 @@
 #!/usr/bin/env bash
 
-# Main executable of the sdd program
+set -euo pipefail
 
-set -eo pipefail
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
 
-SCRIPTDIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
-
-# shellcheck source=../lib/sdd/framework/utils.bash
-source "$SCRIPTDIR"/../lib/sdd/framework/utils.bash
-
-SDD_INSTALL_PREFIX=${SDD_INSTALL_PREFIX:-$HOME/.local}
+SDD_INSTALL_PREFIX="${SDD_INSTALL_PREFIX:-$HOME/.local}"
 export SDD_INSTALL_PREFIX
 mkdir -p "$SDD_INSTALL_PREFIX"/bin
 
-SDD_DATA_DIR=${XDG_DATA_DIR:-$HOME/.local/share}/sdd
+SDD_DATA_DIR="${XDG_DATA_DIR:-$HOME/.local/share}/sdd"
 export SDD_DATA_DIR
 mkdir -p "$SDD_DATA_DIR"/apps
+
+sdd_usage() {
+    cat <<END_OF_HELP_TEXT
+Usage: sdd [OPTIONS] COMMAND [APP [APP...]]
+
+A framework to manage installation of apps from web sources for non-root users
+on Linux systems. For more info visit https://github.com/pylipp/sdd
+
+APP is the name of the application to manage.
+
+Commands:
+    install | i        Install specified packages
+    upgrade | up       Upgrade installed packages
+    remove | rm        Uninstall specified packages
+    list | l           List installed packages
+
+General options:
+    -h --help          Display help message
+    -V --version       Display version information
+
+Options for list command:
+    -i --installed     List installed apps (default)
+    -a --available     List apps available for installation
+    -u --upgradable    List apps that can be upgraded
+
+Environment variables:
+    SDD_VERBOSE        If set, sdd is more verbose about internal processes
+
+END_OF_HELP_TEXT
+}
+
+sdd_version() {
+    if [ ! -e "$SDD_DATA_DIR"/installed ]; then
+        printf 'Cannot find %s.\n' "$SDD_DATA_DIR"/installed >&2
+        return 1
+    fi
+
+    tac "$SDD_DATA_DIR"/installed | awk -F= '/^sdd/ {print $2; exit}'
+}
+
+_get_appfilepath() {
+    local app_name="$1"
+    local app_arch="${2:-}"
+    local arch dir
+    local -a supported=()
+
+    if [ -z "$app_arch" ]; then
+        case "$(arch)" in
+            i?86)
+                supported=( i686 any )
+                ;;
+            x86_64)
+                supported=( x86_64 i686 any )
+                ;;
+            aarch64)
+                supported=( aarch64 arm any )
+                ;;
+            arm*)
+                supported=( arm any )
+                ;;
+            *)
+                supported=( any )
+        esac
+    else
+        supported=( "$app_arch" )
+    fi
+
+    for arch in "${supported[@]}"; do
+        for dir in \
+            "$SCRIPT_DIR/../apps" \
+            "${XDG_CONFIG_HOME:-$HOME/.config}/sdd/apps" \
+            "$SDD_DATA_DIR/apps"
+        do
+            if [ -f "$dir/$app_name@$arch" ]; then
+                echo "$dir/$app_name@$arch"
+                return 0
+            fi
+        done
+    done
+
+    return 1
+}
+
+_list_appfiles() {
+    local arch dir
+    local -a supported=()
+
+    case "$(arch)" in
+        i?86)
+            supported=( i686 any )
+            ;;
+        x86_64)
+            supported=( x86_64 i686 any )
+            ;;
+        aarch64)
+            supported=( aarch64 arm any )
+            ;;
+        arm*)
+            supported=( arm any )
+            ;;
+        *)
+            supported=( any )
+    esac
+
+    if [ -z "${SDD_NO_HEADER:-}" ]; then
+        printf '%-16s %-10s %s\n' "APPLICATION" "ARCH" "DESCRIPTION"
+        printf '%-16s %-10s %s\n' "-----------" "----" "-----------"
+    fi
+
+    for appfile in \
+        "$SCRIPT_DIR"/../apps/* \
+        "${XDG_CONFIG_HOME:-$HOME/.config}"/sdd/apps/* \
+        "$SDD_DATA_DIR"/apps/*
+    do
+        for arch in "${supported[@]}"; do
+            case "$appfile" in
+                *@$arch)
+                    bash "$appfile" info || true
+                    ;;
+                *)
+                    continue
+            esac
+        done
+    done
+}
+
+_validate_apps() {
+    local arg app_name
+
+    for arg in "$@"; do
+        # Extract app name from the argument
+        app_name="${arg%[=@]*}"
+
+        # Check whether app available
+        if ! _get_appfilepath "$app_name" >/dev/null; then
+            printf 'App "%s" could not be found.\n' "$app_name" >&2
+            return 1
+        fi
+    done
+
+    return 0
+}
+
+_spinner() {
+    # Display spinner until process corresponding to given PID has finished
+    local pid="${1?PID required}"
+    local msg="$2"
+    local -a char_set=('|' '/' '―' '\')
+    # local -a char_set=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+    local -i el="${#char_set[@]}"
+    local -i c="${#char_set[-1]}"
+    local -i i=1
+
+    while [ -e /proc/"$pid"/status ]; do
+        printf '\r%s %-*s ' "$msg" "$c" "${char_set[i++%$el]}" >&2
+        sleep 0.1
+    done
+
+    printf '\r%s Done.\n' "$msg" >&2
+}
+
+sdd_runner() {
+    local action="$1"; shift 1
+    local arg app_name app_arch app_version
+    local stdoutlog stderrlog
+    local -i exit_code=3
+
+    # Install one or more apps
+    if [ -z "$1" ]; then
+        printf 'Specify at least one app to %s.\n' "$action" >&2
+        return 1
+    fi
+
+    # Abort if one of the specified apps doesn't exist
+    _validate_apps "$@" || return 2
+
+    for arg in "$@"; do
+        # Extract name, arch, and version from the argument
+        if [[ $arg =~ ([^@=]+)(@[^=]+)?(=.+)? ]]; then
+            app_name="${BASH_REMATCH[1]}"
+            app_arch="${BASH_REMATCH[2]#@}"
+            app_version="${BASH_REMATCH[3]#=}"
+        fi
+
+        stdoutlog="/tmp/sdd-$action-$app_name.stdout"
+        stderrlog="/tmp/sdd-$action-$app_name.stderr"
+
+        if [ -t 1 ] &&  [ -z "${SDD_VERBOSE:-}" ]; then
+            # If stdout attached to terminal, manage in background and display spinner
+            {
+                _sdd_"${action}" "$app_name" "$app_arch" "$app_version"
+            } > "$stdoutlog" 2> "$stderrlog" &
+
+            _spinner $! "${action^}ing $app_name ..."
+
+            exit_code="$(awk 'END {print $(NF)}' "$stderrlog")"
+
+            if [ "$exit_code" -ne 0 ]; then
+                cat "$stderrlog" >&2
+                return "$exit_code"
+            else
+                cat "$stdoutlog"
+            fi
+        else
+            { _sdd_"${action}" "$app_name" "$app_arch" "$app_version" > >(tee "$stdoutlog"); } 2> >(tee "$stderrlog" >&2)
+        fi
+    done
+}
+
+_sdd_install() {
+    # The remaining arguments apps to be installed, as passed into sdd_install,
+    # i.e. possibly with versions specified
+    local app_name="$1"
+    local app_arch="$2"
+    local app_version="$3"
+    local appfile
+
+    if [ -f "$HOME/.config/sdd/apps/$app_name" ]; then
+        printf 'Custom installation for "%s" found.\n' "$app_name"
+    fi
+
+    if [[ -n $app_version ]]; then
+        printf 'Specified version: %s\n' "$app_version"
+    else
+        # If version not specified, try to read it from the app management files.
+        app_version=$(_get_version_from_appfile "$app_name") || {
+            printf 'Latest version available: %s\n' "$app_version"
+        }
+    fi
+
+    # Run app management file
+    appfile="$(_get_appfilepath "$app_name" "$app_arch")"
+    bash -eu -o pipefail "$appfile" install "$app_version" || {
+        exit_code=$?
+        printf 'Error installing "%s". See above and %s.\n' "$app_name" "$stderrlog" >&2
+        printf 'Exited with exit code: %d\n' "$exit_code" >&2
+
+        return "$exit_code"
+    }
+
+    # Remove previous records
+    if [ -f "$SDD_DATA_DIR"/installed ]; then
+        sed -i "/^${app_name}[@=]/d" "$SDD_DATA_DIR"/installed
+    fi
+
+    # Record installed app and version (can be empty)
+    echo "$app_name=$app_version" >> "$SDD_DATA_DIR"/installed
+
+    printf 'Exited with exit code: %d\n' 0 >&2
+
+    return 0
+}
+
+_sdd_uninstall() {
+    local app_name="$1"
+    local app_arch="$2"
+
+    if [ -f "$HOME/.config/sdd/apps/$app_name" ]; then
+        printf 'Custom uninstallation for "%s" found.\n' "$app_name"
+    fi
+
+    # Run app management file
+    bash "$(_get_appfilepath "$app_name" "$app_arch")" remove || {
+        exit_code=$?
+        printf 'Error uninstalling "%s". See above and %s.\n' "$app_name" "$stderrlog" >&2
+        printf 'Exited with exit code: %d\n' "$exit_code" >&2
+
+        return "$exit_code"
+    }
+
+    if [ -f "$SDD_DATA_DIR"/installed ]; then
+        # Remove app install records
+        sed -i "/^${app_name}[@=]/d" "$SDD_DATA_DIR"/installed
+    fi
+
+    printf 'Exited with exit code: %d\n' 0 >&2
+
+    return 0
+}
+
+sdd_upgrade() {
+    local app_name
+
+    sdd_list --upgradable  | while read -r app_name _ _ _; do
+        sdd_runner install "$app_name"
+    done
+}
+
+_get_version_from_appfile() {
+    # Determine relevant version of app from app management files
+    local app_name="$1"
+    local app_arch="${2:-}"
+
+    timeout 60 bash "$(_get_appfilepath "$app_name" "$app_arch")" version
+}
+
+_update_available() {
+    local name="${1%=*}"
+    local installed_version="${1#*=}"
+    local latest_version
+
+    latest_version=$(_get_version_from_appfile "$name")
+
+    if [[ "$installed_version" != "$latest_version" ]]; then
+        printf '%s (%s -> %s)\n' "$name" "$installed_version" "$latest_version"
+    fi
+}
+
+sdd_list() {
+    local option="${1-}"
+
+    case "$option" in
+        --installed|-i|"")
+            if [ -f "$SDD_DATA_DIR"/installed ]; then
+                # List apps installed most recently by filtering unique app names first
+                tac "$SDD_DATA_DIR"/installed | sort -t= -k1,1 -u
+            fi
+            ;;
+        --available|-a)
+            _list_appfiles
+            ;;
+        --upgradable|-u)
+            local name_version
+            local pipe_file
+
+            pipe_file="$(mktemp -u --tmpdir sdd_pipe_XXXXXXXX)"
+
+            _pre_exit_clean() {
+                # close the file descriptor and remove the file
+                exec 3>&-
+                rm "$pipe_file"
+            }
+
+            # close the file descriptor and remove the file when terminate
+            trap _pre_exit_clean HUP INT TERM
+
+            mkfifo "$pipe_file"
+            exec 3<>"$pipe_file"
+
+            sdd_list --installed | while read -r name_version; do
+                _update_available "$name_version" &
+                # write PID to file descriptor
+                printf '%s\n' $! >&3
+            done
+
+            # get PID from fd and wait while it exists
+            while IFS=$'\n' read -r -u 3 -t 1 pid; do
+                while [ -e /proc/"$pid"/status ]; do
+                    sleep 0.2
+                done
+            done
+
+            _pre_exit_clean
+            ;;
+        *)
+            printf 'Unknown option "%s".\n' "$option" >&2
+            return 1
+            ;;
+    esac
+}
 
 main() {
     local command="$1"
@@ -23,32 +378,31 @@ main() {
     case "$command" in
         install|i)
             shift
-            utils_install "$@"
+            sdd_runner install "$@"
             ;;
         upgrade|up)
-            shift
-            utils_upgrade "$@"
+            sdd_upgrade
             ;;
-        uninstall|un)
+        remove|rm)
             shift
-            utils_uninstall "$@"
+            sdd_runner uninstall "$@"
             ;;
         list|l)
             shift
-            utils_list "$@"
+            sdd_list "$@"
             ;;
         --help|-h)
-            utils_usage
+            sdd_usage
             ;;
         --version|-v)
-            utils_version
+            sdd_version
             ;;
         ?*)
             printf 'Unknown command "%s"\n' "$command" >&2
             exit 2
             ;;
         *)
-            utils_usage
+            sdd_usage
     esac
 
     exit 0
