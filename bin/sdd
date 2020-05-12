@@ -373,7 +373,7 @@ sdd_list() {
 }
 
 main() {
-    local command="$1"
+    local command="${1-}"
 
     case "$command" in
         install|i)
