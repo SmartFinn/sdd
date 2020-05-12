@@ -38,6 +38,7 @@ Options for list command:
 
 Environment variables:
     SDD_VERBOSE        If set, sdd is more verbose about internal processes
+    SDD_NO_HEADER      Hide header for list of available apps
 
 END_OF_HELP_TEXT
 }
