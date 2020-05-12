@@ -22,23 +22,23 @@ on Linux systems. For more info visit https://github.com/pylipp/sdd
 APP is the name of the application to manage.
 
 Commands:
-    install | i        Install specified packages
-    upgrade | up       Upgrade installed packages
-    remove | rm        Uninstall specified packages
-    list | l           List installed packages
+  install   | i        Install specified packages
+  upgrade   | up       Upgrade installed packages
+  uninstall | rm       Uninstall specified packages
+  list      | l        List installed packages
 
 General options:
-    -h --help          Display help message
-    -V --version       Display version information
+  -h --help          Display help message
+  -V --version       Display version information
 
 Options for list command:
-    -i --installed     List installed apps (default)
-    -a --available     List apps available for installation
-    -u --upgradable    List apps that can be upgraded
+  -i --installed     List installed apps (default)
+  -a --available     List apps available for installation
+  -u --upgradable    List apps that can be upgraded
 
 Environment variables:
-    SDD_VERBOSE        If set, sdd is more verbose about internal processes
-    SDD_NO_HEADER      Hide header for list of available apps
+  SDD_VERBOSE        If set, sdd is more verbose about internal processes
+  SDD_NO_HEADER      Hide header for list of available apps
 
 END_OF_HELP_TEXT
 }
@@ -384,7 +384,7 @@ main() {
         upgrade|up)
             sdd_upgrade
             ;;
-        remove|rm)
+        uninstall|remove|rm)
             shift
             sdd_runner uninstall "$@"
             ;;
