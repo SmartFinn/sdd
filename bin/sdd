@@ -335,7 +335,6 @@ sdd_list() {
             ;;
         --upgradable|-u)
             local name_version
-            local pipe_file
 
             pipe_file="$(mktemp -u --tmpdir sdd_pipe_XXXXXXXX)"
 
@@ -346,7 +345,7 @@ sdd_list() {
             }
 
             # close the file descriptor and remove the file when terminate
-            trap _pre_exit_clean HUP INT TERM
+            trap _pre_exit_clean INT QUIT TERM EXIT
 
             mkfifo "$pipe_file"
             exec 3<>"$pipe_file"
@@ -363,8 +362,6 @@ sdd_list() {
                     sleep 0.2
                 done
             done
-
-            _pre_exit_clean
             ;;
         *)
             printf 'Unknown option "%s".\n' "$option" >&2
