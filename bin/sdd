@@ -338,17 +338,11 @@ sdd_list() {
 
             pipe_file="$(mktemp -u --tmpdir sdd_pipe_XXXXXXXX)"
 
-            _pre_exit_clean() {
-                # close the file descriptor and remove the file
-                exec 3>&-
-                rm "$pipe_file"
-            }
-
-            # close the file descriptor and remove the file when terminate
-            trap _pre_exit_clean INT QUIT TERM EXIT
-
             mkfifo "$pipe_file"
             exec 3<>"$pipe_file"
+
+            # close the file descriptor and remove the file when terminate
+            trap 'exec 3>&-; rm "$pipe_file"' INT QUIT TERM EXIT
 
             sdd_list --installed | while read -r name_version; do
                 _update_available "$name_version" &
