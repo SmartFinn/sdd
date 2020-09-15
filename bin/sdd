@@ -59,7 +59,7 @@ _get_appfilepath() {
     local -a supported=()
 
     if [ -z "$app_arch" ]; then
-        case "$(arch)" in
+        case "$(uname -m)" in
             i?86)
                 supported=( i686 any )
                 ;;
@@ -99,7 +99,7 @@ _list_appfiles() {
     local arch dir
     local -a supported=()
 
-    case "$(arch)" in
+    case "$(uname -m)" in
         i?86)
             supported=( i686 any )
             ;;
