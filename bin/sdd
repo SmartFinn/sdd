@@ -344,6 +344,8 @@ sdd_list() {
             # close the file descriptor and remove the file when terminate
             trap 'exec 3>&-; rm "$pipe_file"' INT QUIT TERM EXIT
 
+            printf 'Getting latest versions of installed applications ...\n' >&2
+
             sdd_list --installed | while read -r name_version; do
                 _update_available "$name_version" &
                 # write PID to file descriptor
