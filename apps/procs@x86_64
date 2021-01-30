@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "A modern replacement for ps written in Rust"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-${version}-$APP_ARCH-lnx.zip"
+
+    wget -O "$SDD_TEMP_DIR/$package" \
+        "https://github.com/dalance/procs/releases/download/$version/$package"
+    utils:extract "$SDD_TEMP_DIR/$package"
+
+    app_remove
+
+    # Install binary
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'dalance/procs'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"

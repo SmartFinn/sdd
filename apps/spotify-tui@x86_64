@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ALT_APP_NAME="spt"
+
+app_info() {
+    utils:info "Spotify for the terminal written in Rust"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+
+    local package="$APP_NAME-linux"
+
+    wget -O "$SDD_TEMP_DIR/$package".tar.gz \
+        "https://github.com/Rigellute/spotify-tui/releases/download/$version/$package".tar.gz
+    utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
+
+    cd "$SDD_TEMP_DIR" || exit 1
+
+    app_remove
+
+    install -vD -m755 "$ALT_APP_NAME" "$SDD_BIN_DIR/$ALT_APP_NAME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$ALT_APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'Rigellute/spotify-tui'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"

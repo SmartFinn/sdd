@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "Terminal file manager"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="${APP_NAME}-linux-amd64"
+
+    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
+        "https://github.com/gokcehan/lf/releases/download/$version/$package.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$package".tar.gz
+
+    wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
+        "https://github.com/gokcehan/lf/archive/$version.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
+
+    app_remove
+
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Install extras
+    cd "$SDD_TEMP_DIR/$APP_NAME-${version#v}" || exit 1
+
+    install -vD -m644 "$APP_NAME.1" "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+
+    install -vD -m644 "etc/$APP_NAME.bash" \
+        "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+
+    install -vD -m644 "etc/$APP_NAME.zsh" \
+        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+
+    install -vD -m644 "etc/lfcd.sh" "$SDD_ZSH_COMPLETION_DIR/lfcd.sh" >&2
+
+    install -vD -m644 "etc/$APP_NAME.vim" \
+        "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/plugin/$APP_NAME.vim" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/lfcd.sh" >&2
+    rm -vf "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/plugin/$APP_NAME.vim" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'gokcehan/lf'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"

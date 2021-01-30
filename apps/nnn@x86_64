@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "a full-featured terminal file manager"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-static-${version#v}.${APP_ARCH}"
+
+    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
+        "https://github.com/jarun/nnn/releases/download/$version/$package.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$package".tar.gz
+
+    wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
+        "https://github.com/jarun/nnn/archive/$version.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
+
+    app_remove
+
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME-static" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Install extras
+    cd "$SDD_TEMP_DIR/$APP_NAME-${version#v}" || exit 1
+
+    install -vD -m644 "$APP_NAME.1" "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+
+    install -vD -m644 "misc/auto-completion/bash/nnn-completion.bash" \
+        "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+
+    install -vD -m644 "misc/auto-completion/zsh/_nnn" \
+        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+
+    install -vD -m755 "misc/natool/natool" "$SDD_BIN_DIR/natool" >&2
+
+    # Install plugins
+    mkdir -vp "${XDG_CONFIG_HOME:-$HOME/.config}/nnn/plugins" >&2
+    cp -v plugins/* "${XDG_CONFIG_HOME:-$HOME/.config}/nnn/plugins" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+    rm -vf "$SDD_BIN_DIR/natool" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'jarun/nnn'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"

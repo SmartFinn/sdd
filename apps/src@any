@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "Simple Revision Control is RCS reloaded with a modern UI"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-$version"
+
+    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
+        "https://gitlab.com/esr/src/-/archive/${version}/$package.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$package".tar.gz
+
+    cd "$SDD_TEMP_DIR/$package" || exit 1
+
+    app_remove
+
+    install -vD -m755 "$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Convert asciidoc to man page if possible
+    if command -v asciidoctor >/dev/null; then
+        asciidoctor -b manpage "$APP_NAME.adoc"
+        install -vD -m644 "$APP_NAME.1" "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+    fi
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+}
+
+app_version() {
+    utils:gitlab_latest_tag 'esr/src'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"

@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "A Bourne shell GitHub API client library"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-$version"
+
+    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
+        "https://github.com/whiteinge/ok.sh/archive/$version.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$package".tar.gz
+
+    app_remove
+
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME-$version/$APP_NAME" \
+        "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'whiteinge/ok.sh'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"

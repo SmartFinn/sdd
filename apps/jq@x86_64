@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "Command-line JSON processor"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+
+    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
+        "https://github.com/stedolan/jq/releases/download/$version/$APP_NAME-linux64"
+
+    app_remove
+
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'stedolan/jq'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"

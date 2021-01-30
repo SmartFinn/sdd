@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "A very fast implementation of tldr in Rust"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+
+    # Override APP_NAME to tldr
+    APP_NAME="tldr"
+
+    local package="$APP_NAME-linux-$APP_ARCH-musl"
+
+    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
+        "https://github.com/dbrgn/tealdeer/releases/download/$version/$package"
+
+    # Download completions
+    wget -O "$SDD_TEMP_DIR/$APP_NAME.bash" \
+        "https://github.com/dbrgn/tealdeer/releases/download/$version/completions_bash"
+    wget -O "$SDD_TEMP_DIR/$APP_NAME.zsh" \
+        "https://github.com/dbrgn/tealdeer/releases/download/$version/completions_zsh"
+
+    app_remove
+
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    install -vD -m644 "$SDD_TEMP_DIR/$APP_NAME.bash" \
+        "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+
+    install -vD -m644 "$SDD_TEMP_DIR/$APP_NAME.zsh" \
+        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+}
+
+app_remove() {
+    # Override APP_NAME to tldr
+    APP_NAME="tldr"
+
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'dbrgn/tealdeer'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"

@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "A static analysis tool for shell scripts"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-$version.linux.$APP_ARCH.tar.xz"
+
+    wget -O "$SDD_TEMP_DIR/$package" \
+        "https://github.com/koalaman/shellcheck/releases/download/$version/$package"
+    utils:extract "$SDD_TEMP_DIR/$package"
+
+    app_remove
+
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME-$version/$APP_NAME" \
+        "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    if command -v pandoc >/dev/null; then
+        wget -O "$SDD_TEMP_DIR/shellcheck.1.md" \
+            https://raw.githubusercontent.com/koalaman/shellcheck/"$version"/shellcheck.1.md
+
+        # Generating man page using pandoc
+        pandoc -s -f markdown-smart -t man "$SDD_TEMP_DIR/shellcheck.1.md" \
+            -o "$SDD_TEMP_DIR/shellcheck.1"
+
+        # Install man page
+        install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME.1" \
+            "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+    fi
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'koalaman/shellcheck'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"

@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "Docker CLI (client only)"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+
+    wget -O "$SDD_TEMP_DIR/$APP_NAME.tar.gz" \
+        "https://download.docker.com/linux/static/stable/$APP_ARCH/$APP_NAME-${version#v}.tgz"
+    utils:extract "$SDD_TEMP_DIR/$APP_NAME.tar.gz"
+
+    # Download completions
+    wget -O "$SDD_TEMP_DIR/$APP_NAME.bash" \
+        "https://raw.githubusercontent.com/docker/cli/${version}/contrib/completion/bash/docker"
+    wget -O "$SDD_TEMP_DIR/$APP_NAME.zsh" \
+        "https://raw.githubusercontent.com/docker/cli/${version}/contrib/completion/zsh/_docker"
+
+    app_remove
+
+    cd "$SDD_TEMP_DIR" || exit 1
+
+    install -vD -m755 "$APP_NAME/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Install bash completion
+    install -vD -m644 "$APP_NAME.bash" "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+
+    # Install zsh completion
+    install -vD -m644 "$APP_NAME.zsh" "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_tag 'docker/cli'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"

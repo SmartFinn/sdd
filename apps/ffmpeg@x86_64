@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "FFmpeg Static Builds"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-$version-amd64-static"
+
+    wget -O "$SDD_TEMP_DIR/$package.tar.xz" \
+        "https://johnvansickle.com/ffmpeg/releases/$package.tar.xz"
+    utils:extract "$SDD_TEMP_DIR/$package".tar.xz
+
+    cd "$SDD_TEMP_DIR/$package" || exit 1
+
+    app_remove
+
+    install -vD -m755 "$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+    install -vD -m755 "ffprobe" "$SDD_BIN_DIR/ffprobe" >&2
+
+    # Install manpages
+    for manpage in manpages/*.txt; do
+        man_name="$(basename "$manpage" .txt)"
+        install -vD -m644 "$manpage" "$SDD_MAN_DIR/man1/$man_name.1" >&2
+    done
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_BIN_DIR/ffprobe" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+    rm -vf "$SDD_MAN_DIR/man1/ffprobe.1" >&2
+    rm -vf "$SDD_MAN_DIR/man1/ffmpeg-"*.1 >&2
+}
+
+app_version() {
+    wget -qO- 'https://johnvansickle.com/ffmpeg/release-readme.txt' |
+        awk '/version:/ {i[n++] = $2;} END {print i[0];}'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"

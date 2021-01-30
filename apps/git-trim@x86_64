@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "Automatically trims your branches whose tracking remote refs are merged or stray"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-linux-$version"
+
+    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
+        "https://github.com/foriequal0/git-trim/releases/download/$version/$package.tgz"
+    utils:extract "$SDD_TEMP_DIR/$package".tar.gz
+
+    app_remove
+
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME/$APP_NAME" \
+        "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'foriequal0/git-trim'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
