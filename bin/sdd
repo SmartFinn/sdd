@@ -22,10 +22,10 @@ on Linux systems. For more info visit https://github.com/pylipp/sdd
 APP is the name of the application to manage.
 
 Commands:
-  install   | i        Install specified packages
-  upgrade   | up       Upgrade installed packages
-  uninstall | rm       Uninstall specified packages
-  list      | l        List installed packages
+  install (i)        Install specified packages
+  upgrade (up)       Upgrade installed packages
+  uninstall (rm)     Uninstall specified packages
+  list (l)           List installed packages
 
 General options:
   -h --help          Display help message
