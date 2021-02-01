@@ -10,9 +10,8 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="$APP_NAME-linux-amd64"
 
-    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
-        "https://github.com/mstruebing/tldr/releases/download/$version/$package.tar.gz"
-    utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
+    wget -O "$SDD_TEMP_DIR/$package" \
+        "https://github.com/mstruebing/tldr/releases/download/$version/$package"
 
     wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
         "https://github.com/mstruebing/tldr/archive/$version.tar.gz"
@@ -21,7 +20,7 @@ app_install() {
     app_remove
 
     # Install binary
-    install -vD -m755 "$SDD_TEMP_DIR/bin/$package" "$SDD_BIN_DIR/$APP_NAME" >&2
+    install -vD -m755 "$SDD_TEMP_DIR/$package" "$SDD_BIN_DIR/$APP_NAME" >&2
 
     # Install extras
     cd "$SDD_TEMP_DIR/$APP_NAME-$version" || exit 1

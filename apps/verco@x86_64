@@ -8,9 +8,10 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
+    local package="$APP_NAME-linux-$APP_ARCH"
 
     wget -O "$SDD_TEMP_DIR/$APP_NAME" \
-        "https://github.com/matheuslessarodrigues/verco/releases/download/$version/$APP_NAME-linux-$APP_ARCH"
+        "https://github.com/vamolessa/verco/releases/download/$version/$package"
 
     app_remove
 
@@ -22,7 +23,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'matheuslessarodrigues/verco'
+    utils:github_latest_release 'vamolessa/verco'
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
