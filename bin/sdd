@@ -10,10 +10,10 @@ mkdir -p "$SDD_DATA_DIR"/apps
 
 sdd_usage() {
     cat <<END_OF_HELP_TEXT
-Usage: sdd [OPTIONS] COMMAND [APP [APP...]]
+Usage: sdd [OPTIONS] COMMAND [APP[@ARCH][=VERSION] [APP...]]
 
-A framework to manage installation of apps from web sources for non-root users
-on Linux systems. For more info visit https://github.com/pylipp/sdd
+A framework to manage installation of binary apps from web sources for non-root
+users on Linux systems. For more info visit https://github.com/SmartFinn/sdd
 
 APP is the name of the application to manage.
 

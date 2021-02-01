@@ -1,13 +1,19 @@
 # `setup-da-distro`
 
-[![Build Status](https://travis-ci.org/pylipp/sdd.svg?branch=master)](https://travis-ci.org/pylipp/sdd)
+> A framework to manage installation of binary programs from web sources for non-root users on Linux systems
 
-> A framework to manage installation of programs from web sources for non-root users on Linux systems
+The repo is a fork of https://github.com/pylipp/sdd with a few major changes:
+
+- Simpler project structure. Scripts in the repo are standalone with common helpers
+- Support multiple architectures (x86-64, i686, arm, aarch64, or any)
+- Extra helpers for fetching versions from GitHub, GitLab, and cgit, and for extracting archives
+- Extra apps available
+
 ## Motivation
 
-During occasional strolls on reddit or github, my attention is often drawn towards programs that increase productivity or provide an enhancement over others. (As a somewhat irrelevant side note - these programs mostly work in the command line.) Usually these programs are available for download as binary or script, meaning that naturally, the management (installation, upgrade, removal) of those programs has to be performed manually. At this point `sdd` comes into play: It provides a framework to automatize the tasks of managing the programs (or, in `sdd` terminology, 'apps'). The procedures to manage specific apps are defined within scripts in this repository (at `lib/sdd/apps/user/`).
+During occasional strolls on reddit or github, my attention is often drawn towards programs that increase productivity or provide an enhancement over others. (As a somewhat irrelevant side note - these programs mostly work in the command line.) Usually these programs are available for download as binary or script, meaning that naturally, the management (installation, upgrade, removal) of those programs has to be performed manually. At this point `sdd` comes into play: It provides a framework to automatize the tasks of managing the programs (or, in `sdd` terminology, 'apps'). The procedures to manage specific apps are defined within scripts in this repository (at `apps/`).
 
-`sdd` enables me to keep track of my favorite programs, on different machines. I'm working towards having systems set up in a reproducible way on my machines. `sdd` helps me, since I might have different Linux distributions installed on these machine, with different package manager providing different versions of required programs (or none at all). I can freeze the versions of all apps managed by sdd with `sdd list --installed > sdd_freeze.txt`, and re-create them with `sdd install <(sdd_freeze.txt)`.
+`sdd` enables me to keep track of my favorite programs, on different machines. I'm working towards having systems set up in a reproducible way on my machines. `sdd` helps me, since I might have different Linux distributions installed on these machine, with different package manager providing different versions of required programs (or none at all). I can freeze the versions of all apps managed by sdd with `sdd list --installed > sdd_freeze.txt`, and re-create them with `xargs -a sdd_freeze.txt sdd install`.
 
 ## WARNINGS
 
@@ -15,78 +21,93 @@ During occasional strolls on reddit or github, my attention is often drawn towar
 
 When using `sdd`, you execute functionality to manipulate your system. Especially, you download programs from third parties, and install them on your system. Most sources are provided by GitHub releases pages. Keep in mind that repositories can be compromised, and malicious code placed inside; and `sdd` will still happily download it. (If you have an idea how to mitigate this security flaw, please open an issue.)
 
-`sdd` is targeted to 64bit Linux systems. Some apps might not work when installed to different architectures. If available, `zsh` shell completion and `man` pages are set up when installing an app.
-
-## Demo
-
-The following screencast demonstrates how `sdd` is used to install and uninstalled the [`fd`](https://github.com/sharkdp/fd) utility.
-
-![Demo](./demo.svg)
+Installing older versions of available apps is supported but not guaranteed.
 
 ## Installation
 
-Clone the directory and run the bootstrap script to install `sdd` to `~/.local`:
+`sdd` requires a few dependencies:
 
-    git clone https://github.com/pylipp/sdd
-    cd sdd
-    ./bootstrap.sh
+- `bash`
+- `wget`
+- `awk` or `mawk` or `busybox`
+- `coreutils` or `busybox`
 
-You can specify the installation directory with the `PREFIX` environment variable:
+Clone the git repository and let `sdd` install itself:
 
-    PREFIX=/usr ./bootstrap.sh
+```sh
+git clone https://github.com/SmartFinn/sdd
+cd sdd
+bash bin/sdd install sdd
+```
 
-Please verify that the `bin` sub-directory of the installation directory is present in your `PATH`. You might want to append this to your shell configuration file:
+or install `sdd` without git using the following command:
 
-    export PATH="~/.local/bin:$PATH"
+```sh
+wget -qO- https://raw.githubusercontent.com/SmartFinn/sdd/master/bootstrap.sh | sh
+```
+
+Please verify that the `$SDD_BIN_DIR` (`$HOME/.local/bin` by default) is present in your `PATH`. You might want to append this to your shell configuration file:
+
+```sh
+export PATH="$HOME/.local/bin:$PATH"
+```
 
 Same applies for the `MANPATH`:
 
-    export MANPATH="~/.local/share/man:$MANPATH"
+```sh
+export MANPATH="$HOME/.local/share/man:$MANPATH"
+```
 
 For enabling `zsh` completion functions (`oh-my-zsh` users: put this before the line that sources `oh-my-zsh.sh` since it calls `compinit` for setting up completions):
-    
-    fpath=(~/.local/share/zsh/site-functions $fpath)
 
-`sdd` is tested with `bash` 4.4.12.
+```sh
+fpath=(~/.local/share/zsh/site-functions $fpath)
+```
 
-## Upgrading
+For enabling `bash` completion functions, you should be fine if you already use the [`bash-completion`](https://github.com/scop/bash-completion) package. Otherwise add this snippet to your `~/.bashrc`:
 
-Once the program is bootstrapped, upgrade to the latest version (GitHub master) by
-
-    sdd install sdd
+```sh
+# source user completion directory definitions
+for i in "${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion/completions"/*; do
+    [[ -f $i && -r $i ]] && . "$i"
+done
+unset i
+```
 
 ## Usage
 
 ### Installing an app
 
-Install an app to `SDD_INSTALL_PREFIX` (defaults to `~/.local`) with
+Install an app to `SDD_BIN_DIR` (defaults to `~/.local/bin`) with
 
     sdd install <app>
 
 You can specify a custom installation prefix like this:
 
-    SDD_INSTALL_PREFIX=~/bin sdd install <app>
+    SDD_BIN_DIR=~/bin sdd install <app>
 
-or by exporting the `SDD_INSTALL_PREFIX` environment variable.
+or by exporting the `SDD_BIN_DIR` environment variable.
 
 By default, `sdd` installs the latest version of the app available. You can specify a version for installation:
 
     sdd install <app>=<version>
 
-Note that an existing installation of the app will be overwritten.
+> This command overwrites an existing installation of the app without additional conformation.
 
-### Upgrading an app
+> The format of the `<version>` specifier depends on the app that is managed (usually it's the tag of the release on GitHub).
 
-To upgrade an app to the latest version available, run
+### Upgrading the installed apps
 
-    sdd upgrade <app>
+To upgrade the installed apps to the latest version available, run
 
-If you want to upgrade to a specific version, run
+    sdd upgrade
 
-    sdd upgrade <app>=<version>
+If you want to upgrade an individual app, run
+
+    sdd install <app>
 
 Internally, `sdd` executes un- and re-installation of the app for upgrading.
-The usage of `SDD_INSTALL_PREFIX` is the same as for the `install` command.
+The usage of `SDD_BIN_DIR` is the same as for the `install` command.
 
 ### Uninstalling an app
 
@@ -94,11 +115,11 @@ To uninstall an app, run
 
     sdd uninstall <app>
 
-The usage of `SDD_INSTALL_PREFIX` is the same as for the `install` command.
+The usage of `SDD_BIN_DIR` is the same as for the `install` command.
 
 ### Batch commands
 
-The commands `install`, `upgrade`, and `uninstall` can take multiple arguments to manage apps, e.g.
+The commands `install` and `uninstall` can take multiple arguments to manage apps, e.g.
 
     sdd install <app1> <app2>=<version> <app3>
 
@@ -106,7 +127,7 @@ The commands `install`, `upgrade`, and `uninstall` can take multiple arguments t
 
 List installed apps by running
 
-    sdd list --installed
+    sdd list [--installed]
 
 List all apps available for management in `sdd` with
 
@@ -116,30 +137,17 @@ List all installed apps that can be upgraded to a more recent version with
 
     sdd list --upgradable
 
+The `list` command options come in short forms, too: `-i`, `-a`, `-u`
+
 ### General help
 
-`sdd` is verbose. Any program output during management is forwarded to the terminal, and to respective `stdout`/`stderr` log files in `/tmp`.
+High-level program output during management is forwarded to the terminal. Output of the `sdd_*` functions of the app management file is in `/tmp/sdd-<command>-<app>.stderr`. For increased verbosity when running `sdd`, set the respective environment variable before invoking the program
+
+    SDD_VERBOSE=1 sdd install <app>
 
 You can always consult
 
     sdd --help
-
-## Apps available
-
-In alphabetical order:
-
-Name | Description
-:--- | :---
-[bat](https://github.com/sharkdp/bat) | A cat(1) clone with syntax highlighting and Git integration
-[diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) | Human readable diffs
-[direnv](https://github.com/direnv/direnv) | Handle environment variables depending on current directory
-[fd](https://github.com/sharkdp/fd) | A simple, fast and user-friendly alternative to 'find'
-[hub](https://github.com/github/hub) | Command line tool to interact with GitHub
-[jq](https://github.com/stedolan/jq) | Command line JSON processor
-[oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh) | Framework for managing zsh configuration
-[pip](https://pypi.org/project/pip/) | Python package manager
-[ripgrep](https://github.com/BurntSushi/ripgrep) | line-oriented text search tool
-sdd | Thanks for being here :)
 
 ## Customization
 
@@ -151,80 +159,28 @@ You can both
 The procedure in either case is:
 
 1. Create an empty bash file named after the app in `~/.config/sdd/apps` (without `.bash` extension).
-1. Add the functions `sdd_install` and/or `sdd_uninstall` with respective functionality.
+1. Add the functions `sdd_install`, `sdd_remove`, and `sdd_version` with respective functionality.
 1. You're able to manage the app as described in the 'Usage' section. `sdd` tells you when it found a customization for the app specified on the command line.
 
-For exemplary files, see my personal definitions and extensions [here](https://github.com/pylipp/dotfiles/tree/master/sdd_apps).
-
-## Project structure
-
-It is distinguished between
-
-- framework files,
-- app management files,
-- testing files, and
-- project meta-files.
-
-### Description
-
-1. Framework files contain the logic to run the program. They provide generic utility methods (generating symlinks, reading environment variables, etc.). Examples are: program executable, library files.
-1. App management files contain instructions to manage specific apps. For each app, at least one management file exists. A management file contains at least methods for installing, upgrading, and uninstalling an app. Management files are organized in directories indicating their level (user or root).
-1. Testing files cover the functionality of both the framework and the app management files. They are executed in an isolated environment.
-1. Project meta-files comprise documentation files, configuration files for development tools, an installation script, among others.
-
 ## Contributing
-
-### Requirements
-
-- `git`
-- `docker`
-- optionally: `docker-compose`
-
-### Testing
-
-The program is tested in a container environment using the `bats` framework.
-Clone this repository and pull the Docker image to run tests.
-
-    git clone https://github.com/pylipp/sdd
-    docker pull pylipp/sdd
-    cd sdd
-    test/run.sh
-
-You might want to skip app tests since they require an internet connection
-
-    NO_APP_TESTS=1 test/run.sh
-
-For attaching to the test container after the tests have completed, do
-
-    test/run.sh --debug
-
-For creating a Docker container and attaching it to the terminal, do
-
-    test/run.sh --open
-
-For building the image, run
-
-    docker build test/setup -t sdd:latest
-
-You can also build and test the image in a single command by
-
-    docker-compose -f test/setup/docker-compose.test.yml up
-
-Note that DockerHub automatically builds the image when source code is pushed to GitHub, and pushes it the DockerHub repository if the tests succeeded. The tests are defined in `test/setup/docker-compose.test.yml`.
-
-### Extending
 
 You're looking for managing an app but it's not included in `sdd` yet? Here's how contribute an app management script:
 
 1. Fork this repository.
 1. In your fork, create a feature branch.
-1. Create an empty bash file named after the app in `lib/sdd/apps/user`.
-1. Add a test in `test/apps/<app>.bats`, e.g. verifying the version of the app to be installed.
-1. Add the functions `sdd_install` and `sdd_uninstall` with respective functionality.
-1. Add app name, link, and description to the table of available apps in the README file.
+1. Clone existing app management file to `new_name@arch` in `apps`.
+1. Update `sdd_version`, `sdd_install`, and `sdd_remove` functions.
 1. Add the new files, commit, and push.
 1. Open a PR!
 
-## Python apps
+## Related projects
 
-Consider using [`pipx`](https://pipxproject.github.io/pipx/) for installing Python applications (in isolated environments).
+Use case | Tool
+--- | ---
+Managing Python packages (system-wide or user-specific) | pip
+Managing Python apps (system-wide or user-specific) | [pipx](https://pipxproject.github.io/pipx/)
+Generate packages from Makefile and track installation by package manager | [CheckInstall](https://asic-linux.com.mx/~izto/checkinstall/)
+Declarative whole-system configuration; unprivileged package management | [GNU Guix](https://guix.gnu.org/)
+Creating packages of various formats | [fpm](https://github.com/jordansissel/fpm)
+
+Note that maintaining packages (deb, rpm, etc.) might still require root privileges, depending on your system.
