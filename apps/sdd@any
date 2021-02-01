@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "installation of binary programs from web sources"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-master"
+
+    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
+        "https://github.com/SmartFinn/sdd/archive/master.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$package".tar.gz
+
+    cd "$SDD_TEMP_DIR/$package" || exit 1
+
+    app_remove
+
+    # Install main script
+    install -vD -m755 "bin/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Install bash completion
+    install -vD -m644 "completion/$APP_NAME" \
+        "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+
+    # Install zsh completion
+    install -vD -m644 "completion/_$APP_NAME" \
+        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+
+    # Copy appfiles to $SDD_DATA_DIR/apps
+    mkdir -vp "$SDD_DATA_DIR/apps" >&2
+    cp -v apps/* "$SDD_DATA_DIR/apps" >&2
+
+    # Append user's profile if $SDD_BIN_DIR isn't in $PATH
+    if ! [[ $PATH =~ :?$SDD_BIN_DIR/?:? ]]; then
+        tee -a "$HOME/.profile" <<APPEND_PROFILE
+
+# add SDD_BIN_DIR to PATH
+[ -d "$SDD_BIN_DIR" ] && PATH="$SDD_BIN_DIR:\$PATH"
+APPEND_PROFILE
+
+        cat <<POST_INSTALL_MSG
+$APP_NAME: \$SDD_BIN_DIR will be added in your PATH on the next login.
+$APP_NAME: Please logout and log back in for changes to take effect.
+POST_INSTALL_MSG
+    fi
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+    rm -vrf "$SDD_DATA_DIR/apps" >&2
+}
+
+app_version() {
+    utils:github_latest_commit_hash 'SmartFinn/sdd'
+}
+
+: "${SDD_DATA_DIR:=${XDG_DATA_HOME:-$HOME/.local/share}/sdd}"
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
