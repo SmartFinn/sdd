@@ -332,15 +332,16 @@ sdd_list() {
         --upgradable|-u)
             local name_version
 
-            pipe_file="$(mktemp -u --tmpdir sdd_pipe_XXXXXXXX)"
+            # workaround for busybox mktemp command
+            pipe_file="$(mktemp -u | sed 's/tmp\./sdd_pipe_/')"
 
             mkfifo "$pipe_file"
             exec 3<>"$pipe_file"
 
             # close the file descriptor and remove the file when terminate
-            trap 'exec 3>&-; rm "$pipe_file"' INT QUIT TERM EXIT
+            trap 'exec 3>&-; rm -f "$pipe_file"' SIGINT SIGTERM ERR EXIT
 
-            printf 'Getting latest versions of installed applications ...\n' >&2
+            printf 'Getting latest versions of installed applications...\n' >&2
 
             sdd_list --installed | while read -r name_version; do
                 _update_available "$name_version" &
