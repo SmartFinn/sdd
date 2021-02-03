@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "Manage your dotfiles interactively with fzf"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-${version#v}"
+    local install_dir="${XDG_DATA_HOME:-$HOME/.local/share}/$APP_NAME"
+
+    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
+        "https://github.com/kazhala/dotbare/archive/$version.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$package".tar.gz
+
+    cd "$SDD_TEMP_DIR/$package" || exit 1
+
+    app_remove
+
+    cat > "$SDD_BIN_DIR/$APP_NAME" <<'SCRIPT_END'
+#!/usr/bin/env bash
+
+SCRIPT_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/dotbare"
+"$SCRIPT_DIR"/dotbare "$@"
+SCRIPT_END
+
+    chmod -v 755 "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    install -vD -m755 "$APP_NAME" "$install_dir/$APP_NAME" >&2
+
+    mkdir -vp "$install_dir/helper" >&2
+    install -vD -m755 helper/* "$install_dir/helper" >&2
+
+    mkdir -vp "$install_dir/scripts" >&2
+    install -vD -m755 scripts/* "$install_dir/scripts" >&2
+
+    # HACK: remove upgrade script since we're not on the git repo
+    rm -fv "$install_dir/scripts/fupgrade" >&2
+
+    install -vD -m644 "pkg/completion/bash/$APP_NAME" \
+        "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+
+    install -vD -m644 "pkg/completion/zsh/_$APP_NAME" \
+        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+    rm -vfr "${XDG_DATA_HOME:-$HOME/.local/share}/$APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_tag 'kazhala/dotbare'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
