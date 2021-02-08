@@ -15,7 +15,7 @@ app_install() {
 
     app_remove
 
-    install -D -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
 }
 
 app_remove() {
