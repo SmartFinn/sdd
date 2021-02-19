@@ -192,8 +192,8 @@ sdd_runner() {
             app_version="${BASH_REMATCH[3]#=}"
         fi
 
-        stdoutlog="/tmp/sdd-$action-$app_name.stdout"
-        stderrlog="/tmp/sdd-$action-$app_name.stderr"
+        stdoutlog="${TMPDIR:-/tmp}/sdd-$action-$app_name.stdout"
+        stderrlog="${TMPDIR:-/tmp}/sdd-$action-$app_name.stderr"
 
         if [ -t 1 ] &&  [ -z "${SDD_VERBOSE:-}" ]; then
             # If stdout attached to terminal, manage in background and display spinner
