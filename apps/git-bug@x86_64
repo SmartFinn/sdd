@@ -21,7 +21,7 @@ app_install() {
 
     install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
 
-    cd "$SDD_TEMP_DIR/$APP_NAME-$version" || exit 1
+    cd "$SDD_TEMP_DIR/$APP_NAME-${version#v}" || exit 1
 
     # Install man page
     mkdir -vp "$SDD_MAN_DIR/man1/" >&2
