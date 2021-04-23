@@ -51,7 +51,7 @@ app_install() {
 
 app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
-    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_j" >&2
     rm -vf "${XDG_DATA_HOME:-$HOME/.local/share}/autojump/autojump.sh" >&2
     rm -vf "${XDG_DATA_HOME:-$HOME/.local/share}/autojump/autojump.bash" >&2
     rm -vf "${XDG_DATA_HOME:-$HOME/.local/share}/autojump/autojump.fish" >&2
