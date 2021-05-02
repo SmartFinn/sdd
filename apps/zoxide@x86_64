@@ -10,17 +10,34 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="$APP_NAME-$APP_ARCH-unknown-linux-musl"
 
-    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
-        "https://github.com/ajeetdsouza/zoxide/releases/download/$version/$package"
+    wget -O "$SDD_TEMP_DIR/$package".tar.gz \
+        "https://github.com/ajeetdsouza/zoxide/releases/download/$version/$package".tar.gz
+    utils:extract "$SDD_TEMP_DIR/$package".tar.gz
+
+    cd "$SDD_TEMP_DIR/$package" || exit 1
 
     app_remove
 
     # Install binary
-    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+    install -vD -m755 "$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Install man pages
+    install -vD -m644 "man/$APP_NAME.1" "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+    install -vD -m644 "man/zoxide-remove.1" "$SDD_MAN_DIR/man1/zoxide-remove.1" >&2
+    install -vD -m644 "man/zoxide-add.1" "$SDD_MAN_DIR/man1/zoxide-add.1" >&2
+    install -vD -m644 "man/zoxide-import.1" "$SDD_MAN_DIR/man1/zoxide-import.1" >&2
+    install -vD -m644 "man/zoxide-query.1" "$SDD_MAN_DIR/man1/zoxide-query.1" >&2
+    install -vD -m644 "man/zoxide-init.1" "$SDD_MAN_DIR/man1/zoxide-init.1" >&2
 }
 
 app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+    rm -vf "$SDD_MAN_DIR/man1/zoxide-remove.1" >&2
+    rm -vf "$SDD_MAN_DIR/man1/zoxide-add.1" >&2
+    rm -vf "$SDD_MAN_DIR/man1/zoxide-import.1" >&2
+    rm -vf "$SDD_MAN_DIR/man1/zoxide-query.1" >&2
+    rm -vf "$SDD_MAN_DIR/man1/zoxide-init.1" >&2
 }
 
 app_version() {
