@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "Parallel Disk Usage. Blazing fast directory tree analyzer"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-$APP_ARCH-unknown-linux-gnu"
+
+    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
+        "https://github.com/KSXGitHub/parallel-disk-usage/releases/download/$version/$package"
+
+    wget -O "$SDD_TEMP_DIR/$APP_NAME.bash" \
+        "https://github.com/KSXGitHub/parallel-disk-usage/releases/download/$version/completion.bash"
+
+    wget -O "$SDD_TEMP_DIR/$APP_NAME.zsh" \
+        "https://github.com/KSXGitHub/parallel-disk-usage/releases/download/$version/completion.zsh"
+
+    app_remove
+
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Install bash completion
+    install -vD -m644 "$SDD_TEMP_DIR/$APP_NAME.bash" \
+        "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+
+    # Install zsh completion
+    install -vD -m644 "$SDD_TEMP_DIR/$APP_NAME.zsh" \
+        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'KSXGitHub/parallel-disk-usage'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
