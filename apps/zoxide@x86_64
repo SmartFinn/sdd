@@ -14,6 +14,10 @@ app_install() {
         "https://github.com/ajeetdsouza/zoxide/releases/download/$version/$package".tar.gz
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
+    wget -O "$SDD_TEMP_DIR"/main.tar.gz \
+        "https://github.com/ajeetdsouza/zoxide/archive/main.tar.gz"
+    utils:extract "$SDD_TEMP_DIR"/main.tar.gz
+
     cd "$SDD_TEMP_DIR/$package" || exit 1
 
     app_remove
@@ -28,6 +32,15 @@ app_install() {
     install -vD -m644 "man/zoxide-import.1" "$SDD_MAN_DIR/man1/zoxide-import.1" >&2
     install -vD -m644 "man/zoxide-query.1" "$SDD_MAN_DIR/man1/zoxide-query.1" >&2
     install -vD -m644 "man/zoxide-init.1" "$SDD_MAN_DIR/man1/zoxide-init.1" >&2
+
+    # Install completions
+    cd "$SDD_TEMP_DIR/$APP_NAME-main" || exit 1
+
+    install -vD -m644 "contrib/completions/$APP_NAME.bash" \
+        "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+
+    install -vD -m644 "contrib/completions/_$APP_NAME" \
+        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
 }
 
 app_remove() {
@@ -38,6 +51,8 @@ app_remove() {
     rm -vf "$SDD_MAN_DIR/man1/zoxide-import.1" >&2
     rm -vf "$SDD_MAN_DIR/man1/zoxide-query.1" >&2
     rm -vf "$SDD_MAN_DIR/man1/zoxide-init.1" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
 }
 
 app_version() {
