@@ -49,7 +49,7 @@ EOF
 
 app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
-    rm -vf "${XDG_HOME_DATA:-$HOME/.local/share}/applications/$APP_NAME.desktop"
+    rm -vf "${XDG_HOME_DATA:-$HOME/.local/share}/applications/$APP_NAME.desktop" >&2
 
     # remove icons
     for size in 16x16 24x24 32x32 48x48 128x128 512x512; do
