@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ALT_APP_NAME="mlr"
+
+app_info() {
+    utils:info "Miller is like awk, sed, cut, join, and sort for name-indexed data (CSV, TSV, JSON)"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local bin_name="${ALT_APP_NAME}.linux.${APP_ARCH}"
+    local package="${ALT_APP_NAME}-${version#v}"
+
+    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
+        "https://github.com/johnkerl/miller/releases/download/$version/$bin_name"
+
+    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
+        "https://github.com/johnkerl/miller/releases/download/$version/$package.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
+
+    app_remove
+
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$ALT_APP_NAME" >&2
+
+    # Install extras
+    cd "$SDD_TEMP_DIR/$package" || exit 1
+
+    install -vD -m644 "man/$ALT_APP_NAME.1" "$SDD_MAN_DIR/man1/$ALT_APP_NAME.1" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$ALT_APP_NAME" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$ALT_APP_NAME.1" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'johnkerl/miller'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
