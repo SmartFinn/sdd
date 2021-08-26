@@ -14,10 +14,15 @@ app_install() {
         "https://github.com/cli/cli/releases/download/$version/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
+    cd "$SDD_TEMP_DIR/$package" || exit 1
+
     app_remove
 
-    install -vD -m755 "$SDD_TEMP_DIR/$package/bin/$APP_NAME" \
-        "$SDD_BIN_DIR/$APP_NAME" >&2
+    install -vD -m755 "bin/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Install man pages
+    mkdir -vp "$SDD_MAN_DIR/man1/" >&2
+    cp -v "share/man/man1/$APP_NAME"*.1 "$SDD_MAN_DIR"/man1 >&2
 
     # Generate shell completions
     "$SDD_BIN_DIR/$APP_NAME" completion -s bash > \
@@ -29,6 +34,7 @@ app_install() {
 
 app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$APP_NAME"*.1 >&2
     rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
     rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
 }
