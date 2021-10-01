@@ -10,7 +10,7 @@ app_install() {
     local version="${1:-$(app_version)}"
 
     wget -O "$SDD_TEMP_DIR/$APP_NAME" \
-        "https://github.com/docker/compose/releases/download/$version/$APP_NAME-linux-amd64"
+        "https://github.com/docker/compose/releases/download/$version/$APP_NAME-linux-$APP_ARCH"
 
     app_remove
 
