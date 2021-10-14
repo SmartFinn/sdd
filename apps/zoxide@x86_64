@@ -8,7 +8,7 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local package="$APP_NAME-$APP_ARCH-unknown-linux-musl"
+    local package="$APP_NAME-$version-$APP_ARCH-unknown-linux-musl"
 
     wget -O "$SDD_TEMP_DIR/$package".tar.gz \
         "https://github.com/ajeetdsouza/zoxide/releases/download/$version/$package".tar.gz
@@ -18,7 +18,7 @@ app_install() {
         "https://github.com/ajeetdsouza/zoxide/archive/main.tar.gz"
     utils:extract "$SDD_TEMP_DIR"/main.tar.gz
 
-    cd "$SDD_TEMP_DIR/$package" || exit 1
+    cd "$SDD_TEMP_DIR/${package//$version-/}" || exit 1
 
     app_remove
 
