@@ -24,7 +24,7 @@ app_install() {
     install -vD -m644 "$APP_NAME.1" "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
 
     # Install bash completion
-    install -vD -m644 "autocomplete/$APP_NAME.bash-completion" \
+    install -vD -m644 "autocomplete/$APP_NAME.bash" \
         "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
 
     # Install zsh completion
