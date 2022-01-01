@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "Use any linux distribution inside your terminal"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-${version#v}"
+
+    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
+        "https://github.com/89luca89/distrobox/archive/$version.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$package".tar.gz
+
+    cd "$SDD_TEMP_DIR/$package" || exit 1
+
+    app_remove
+
+    install -vD -m755 "$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2 || true
+    install -vD -m755 "$APP_NAME-create" "$SDD_BIN_DIR/$APP_NAME-create" >&2
+    install -vD -m755 "$APP_NAME-enter" "$SDD_BIN_DIR/$APP_NAME-enter" >&2
+    install -vD -m755 "$APP_NAME-export" "$SDD_BIN_DIR/$APP_NAME-export" >&2
+    install -vD -m755 "$APP_NAME-init" "$SDD_BIN_DIR/$APP_NAME-init" >&2
+    install -vD -m755 "$APP_NAME-list" "$SDD_BIN_DIR/$APP_NAME-list" >&2 || true
+    install -vD -m755 "$APP_NAME-rm" "$SDD_BIN_DIR/$APP_NAME-rm" >&2 || true
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_BIN_DIR/$APP_NAME-create" >&2
+    rm -vf "$SDD_BIN_DIR/$APP_NAME-enter" >&2
+    rm -vf "$SDD_BIN_DIR/$APP_NAME-export" >&2
+    rm -vf "$SDD_BIN_DIR/$APP_NAME-init" >&2
+    rm -vf "$SDD_BIN_DIR/$APP_NAME-list" >&2
+    rm -vf "$SDD_BIN_DIR/$APP_NAME-rm" >&2
+}
+
+app_version() {
+    utils:github_latest_release '89luca89/distrobox'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
