@@ -17,10 +17,19 @@ app_install() {
     app_remove
 
     install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Generate shell completions
+    "$SDD_BIN_DIR/$APP_NAME" --completion bash > \
+        "$SDD_BASH_COMPLETION_DIR/$APP_NAME"
+
+    "$SDD_BIN_DIR/$APP_NAME" --completion zsh > \
+        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME"
 }
 
 app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
 }
 
 app_version() {
