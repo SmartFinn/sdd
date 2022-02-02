@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "General purpose file previewer designed for ranger, lf, nnn"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+
+    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
+        "https://github.com/doronbehar/pistol/releases/download/$version/$APP_NAME"
+
+    wget -O "$SDD_TEMP_DIR/$APP_NAME.1.gz" \
+        "https://github.com/doronbehar/pistol/releases/download/$version/$APP_NAME.1.gz"
+
+    app_remove
+
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+    install -vD -m644 "$SDD_TEMP_DIR/$APP_NAME.1.gz" "$SDD_MAN_DIR/man1/$APP_NAME.1.gz" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'doronbehar/pistol'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
