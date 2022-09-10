@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "a command-line JSON viewer"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="${APP_NAME}-${version}-${APP_ARCH}-unknown-linux-gnu"
+
+    wget -O "$SDD_TEMP_DIR/$package.zip" \
+        "https://github.com/PaulJuliusMartinez/jless/releases/download/$version/$package.zip"
+    utils:extract "$SDD_TEMP_DIR/$package".zip
+
+    app_remove
+
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'PaulJuliusMartinez/jless'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
