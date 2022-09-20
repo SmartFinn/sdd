@@ -8,11 +8,11 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local package="$APP_NAME-${version#v}-linux-musl-$APP_ARCH-static.xz"
+    local package="$APP_NAME-${version#v}-linux-musl-$APP_ARCH-static"
 
-    wget -O "$SDD_TEMP_DIR/$package" \
-        "https://github.com/p-gen/smenu/releases/download/$version/$package"
-    utils:extract "$SDD_TEMP_DIR/$package"
+    wget -O "$SDD_TEMP_DIR/$package".xz \
+        "https://github.com/p-gen/smenu/releases/download/$version/$package".xz
+    utils:extract "$SDD_TEMP_DIR/$package".xz
 
     wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
         "https://github.com/p-gen/smenu/archive/$version.tar.gz"
