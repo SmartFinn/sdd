@@ -2,6 +2,49 @@
 
 set -euo pipefail
 
+declare -a _DISTROBOX_BINS=(
+    distrobox
+    distrobox-create
+    distrobox-enter
+    distrobox-ephemeral
+    distrobox-export
+    distrobox-generate-entry
+    distrobox-host-exec
+    distrobox-init
+    distrobox-list
+    distrobox-rm
+    distrobox-stop
+    distrobox-upgrade
+)
+
+declare -a _DISTROBOX_COMP=(
+    distrobox
+    distrobox-create
+    distrobox-enter
+    distrobox-ephemeral
+    distrobox-generate-entry
+    distrobox-list
+    distrobox-rm
+    distrobox-stop
+    distrobox-upgrade
+)
+
+declare -a _DISTROBOX_MANS=(
+    distrobox.1
+    distrobox-compatibility.1
+    distrobox-create.1
+    distrobox-enter.1
+    distrobox-ephemeral.1
+    distrobox-export.1
+    distrobox-generate-entry.1
+    distrobox-host-exec.1
+    distrobox-init.1
+    distrobox-list.1
+    distrobox-rm.1
+    distrobox-stop.1
+    distrobox-upgrade.1
+)
+
 app_info() {
     utils:info "Use any linux distribution inside your terminal"
 }
@@ -18,23 +61,37 @@ app_install() {
 
     app_remove
 
-    install -vD -m755 "$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2 || true
-    install -vD -m755 "$APP_NAME-create" "$SDD_BIN_DIR/$APP_NAME-create" >&2
-    install -vD -m755 "$APP_NAME-enter" "$SDD_BIN_DIR/$APP_NAME-enter" >&2
-    install -vD -m755 "$APP_NAME-export" "$SDD_BIN_DIR/$APP_NAME-export" >&2
-    install -vD -m755 "$APP_NAME-init" "$SDD_BIN_DIR/$APP_NAME-init" >&2
-    install -vD -m755 "$APP_NAME-list" "$SDD_BIN_DIR/$APP_NAME-list" >&2 || true
-    install -vD -m755 "$APP_NAME-rm" "$SDD_BIN_DIR/$APP_NAME-rm" >&2 || true
+    # Install bins
+    for bin in "${_DISTROBOX_BINS[@]}"; do
+        install -vD -m755 "$bin" "$SDD_BIN_DIR/$bin" >&2 || true
+    done
+
+    # Install bash completions
+    for comp in "${_DISTROBOX_COMP[@]}"; do
+        install -vD -m644 "completions/$comp" "$SDD_BASH_COMPLETION_DIR/$comp" >&2
+    done
+
+    # Install man pages
+    for manpage in "${_DISTROBOX_MANS[@]}"; do
+        install -vD -m644 "man/man1/$manpage" "$SDD_MAN_DIR/man1/$manpage.1" >&2
+    done
 }
 
 app_remove() {
-    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
-    rm -vf "$SDD_BIN_DIR/$APP_NAME-create" >&2
-    rm -vf "$SDD_BIN_DIR/$APP_NAME-enter" >&2
-    rm -vf "$SDD_BIN_DIR/$APP_NAME-export" >&2
-    rm -vf "$SDD_BIN_DIR/$APP_NAME-init" >&2
-    rm -vf "$SDD_BIN_DIR/$APP_NAME-list" >&2
-    rm -vf "$SDD_BIN_DIR/$APP_NAME-rm" >&2
+    # Remove bins
+    for bin in "${_DISTROBOX_BINS[@]}"; do
+        rm -vf "$SDD_BIN_DIR/$bin" >&2
+    done
+
+    # Remove bash completions
+    for comp in "${_DISTROBOX_COMP[@]}"; do
+        rm -vf "$SDD_BASH_COMPLETION_DIR/$comp" >&2
+    done
+
+    # Remove man pages
+    for manpage in "${_DISTROBOX_MANS[@]}"; do
+        rm -vf "$SDD_MAN_DIR/man1/$manpage.1" >&2
+    done
 }
 
 app_version() {
