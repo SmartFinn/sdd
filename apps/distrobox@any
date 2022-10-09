@@ -73,7 +73,7 @@ app_install() {
 
     # Install man pages
     for manpage in "${_DISTROBOX_MANS[@]}"; do
-        install -vD -m644 "man/man1/$manpage" "$SDD_MAN_DIR/man1/$manpage.1" >&2
+        install -vD -m644 "man/man1/$manpage" "$SDD_MAN_DIR/man1/$manpage" >&2
     done
 }
 
@@ -90,7 +90,7 @@ app_remove() {
 
     # Remove man pages
     for manpage in "${_DISTROBOX_MANS[@]}"; do
-        rm -vf "$SDD_MAN_DIR/man1/$manpage.1" >&2
+        rm -vf "$SDD_MAN_DIR/man1/$manpage" >&2
     done
 }
 
