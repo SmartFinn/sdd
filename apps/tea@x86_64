@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "A command line tool to interact with Gitea servers"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="${APP_NAME}-${version#[vV]}-linux-amd64"
+
+    wget -O "$SDD_TEMP_DIR/$APP_NAME.xz" \
+        "https://gitea.com/gitea/tea/releases/download/$version/$package.xz"
+    utils:extract "$SDD_TEMP_DIR/$APP_NAME".xz
+
+    # TODO: uncomment lines below when autocomplete will work correctly
+    # wget -O "$SDD_TEMP_DIR/$APP_NAME.sh" \
+    #     "https://gitea.com/gitea/tea/raw/tag/${version}/contrib/autocomplete.sh"
+    #
+    # wget -O "$SDD_TEMP_DIR/$APP_NAME.zsh" \
+    #     "https://gitea.com/gitea/tea/raw/tag/${version}/contrib/autocomplete.zsh"
+    # sed -i "s/\$PROG/$APP_NAME/g" "$SDD_TEMP_DIR/$APP_NAME.zsh"
+
+    app_remove
+
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Install shell completions
+    # TODO: uncomment lines below when autocomplete will work correctly
+    # install -vD -m644  "$SDD_TEMP_DIR/$APP_NAME.sh" \
+    #     "$SDD_BASH_COMPLETION_DIR/$APP_NAME"
+    #
+    # install -vD -m644  "$SDD_TEMP_DIR/$APP_NAME.zsh" \
+    #     "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME"
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    # TODO: uncomment lines below when autocomplete will work correctly
+    # rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    # rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+}
+
+app_version() {
+    utils:gitea_latest_release 'gitea/tea'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
