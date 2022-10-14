@@ -101,6 +101,34 @@ utils:cgit_tags() {
         sed -n "s/.*\/tag\/?h=\([^']\+\)'>.*/\1/p"
 }
 
+utils:gitea_latest_release() {
+    local repo="${1?}"
+    local gitea_host="${2:-gitea.com}"
+
+    # Get tag name from URL redirection to avoid TOKEN requires
+    awk -F'[ /]' -v e=1 '/Location:/ {e=0; print $(NF-1);} END {exit(e);}' < <(
+        wget -o- --max-redirect 0 "https://$gitea_host/$repo/releases/latest"
+    )
+}
+
+utils:gitea_tags() {
+    local repo="${1?}"
+    local gitea_host="${2:-gitea.com}"
+
+    # Get tags from Gitea web interface to avoid TOKEN requires
+    wget -qO- "https://$gitea_host/$repo/tags" |
+        sed -n 's%.*/src/tag/\([^"]\+\)"[ >].*%\1%p'
+}
+
+utils:gitea_releases() {
+    local repo="${1?}"
+    local gitea_host="${2:-gitea.com}"
+
+    # Get releases from Gitea web interface to avoid TOKEN requires
+    wget -qO- "https://$gitea_host/$repo/tags" |
+        sed -n 's%.*/releases/tag/\([^"]\+\)">.*%\1%p'
+}
+
 utils:parser() {
     local cmd="${1:-}"
 
