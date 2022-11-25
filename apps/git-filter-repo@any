@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "Multitree-based personal task manager"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="${APP_NAME}-${version#v}"
+
+    wget -O "$SDD_TEMP_DIR/$package.tar.xz" \
+        "https://github.com/newren/git-filter-repo/releases/download/$version/$package.tar.xz"
+    utils:extract "$SDD_TEMP_DIR/$package".tar.xz
+
+    app_remove
+
+    cd "$SDD_TEMP_DIR/$package" || exit 1
+
+    install -vD -m755 "$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'newren/git-filter-repo'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
