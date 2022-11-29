@@ -137,7 +137,7 @@ utils:parser() {
     case "$cmd" in
         install|remove|upgrade|version|info)
             if declare -f app_"$cmd" > /dev/null; then
-                app_"$cmd" "$@"
+                SDD_ACTION="$cmd" app_"$cmd" "$@"
             else
                 printf 'error: "%s" is not supported\n' "$cmd" >&2
                 exit 2
