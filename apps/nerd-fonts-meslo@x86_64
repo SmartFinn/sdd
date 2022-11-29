@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ALT_APP_NAME="MesloNerdFonts"
+SDD_FONTS_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/fonts"
+
+app_info() {
+    utils:info "Standalone Meslo (ttf-meslo) patched font from the nerd-fonts library"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="Meslo"
+
+    wget -O "$SDD_TEMP_DIR/$version.zip" \
+        "https://github.com/ryanoasis/nerd-fonts/releases/download/$version/$package".zip
+    utils:extract "$SDD_TEMP_DIR/$version.zip"
+
+    cd "$SDD_TEMP_DIR" || exit 1
+
+    app_remove
+
+    # Remove Windows Compatible and Mono versions
+    rm -f -- *"Windows Compatible.ttf"
+    rm -f -- *"Complete Mono.ttf"
+
+    # Copy fonts
+    mkdir -vp "$SDD_FONTS_HOME/$ALT_APP_NAME" >&2
+    cp -v -- *.ttf "$SDD_FONTS_HOME/$ALT_APP_NAME/" >&2
+
+    # Rebuild font cache
+    fc-cache -r -v "$SDD_FONTS_HOME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_FONTS_HOME/$ALT_APP_NAME/"*.ttf >&2
+    rmdir -v "$SDD_FONTS_HOME/$ALT_APP_NAME" >&2 || true
+
+    # Rebuild font cache
+    [ "$SDD_ACTION" == "install" ] || fc-cache -r -v >&2
+}
+
+app_version() {
+    utils:github_latest_release 'ryanoasis/nerd-fonts'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
