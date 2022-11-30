@@ -22,8 +22,8 @@ app_install() {
     app_remove
 
     # Remove Windows Compatible and Mono versions
-    rm -f -- *"Windows Compatible.ttf"
-    rm -f -- *"Complete Mono.ttf"
+    rm -f -- *Windows\ Compatible.?tf
+    rm -f -- *Complete\ Mono.?tf
 
     # Copy fonts
     mkdir -vp "$SDD_FONTS_HOME/$ALT_APP_NAME" >&2
@@ -36,7 +36,7 @@ app_install() {
 }
 
 app_remove() {
-    rm -vf "$SDD_FONTS_HOME/$ALT_APP_NAME/"*.ttf >&2
+    rm -vf "$SDD_FONTS_HOME/$ALT_APP_NAME/"*.?tf >&2
     rmdir -v "$SDD_FONTS_HOME/$ALT_APP_NAME" >&2 || true
 
     # Rebuild font cache
