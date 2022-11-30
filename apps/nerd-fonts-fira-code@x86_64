@@ -30,7 +30,9 @@ app_install() {
     cp -v -- *.ttf "$SDD_FONTS_HOME/$ALT_APP_NAME/" >&2
 
     # Rebuild font cache
-    fc-cache -r -v "$SDD_FONTS_HOME" >&2
+    if command -v fc-cache >/dev/null; then
+        fc-cache -fv "$SDD_FONTS_HOME" >&2
+    fi
 }
 
 app_remove() {
@@ -38,7 +40,10 @@ app_remove() {
     rmdir -v "$SDD_FONTS_HOME/$ALT_APP_NAME" >&2 || true
 
     # Rebuild font cache
-    [ "$SDD_ACTION" == "install" ] || fc-cache -r -v >&2
+    [ "$SDD_ACTION" == "install" ] && return 0
+    if command -v fc-cache >/dev/null; then
+        fc-cache -fv "$SDD_FONTS_HOME" >&2
+    fi
 }
 
 app_version() {
