@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ALT_APP_NAME=trans
+
+app_info() {
+    utils:info "Command-line translator using Google Translate, etc"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-${version#v}"
+
+    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
+        "https://github.com/soimort/translate-shell/archive/$version.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$package".tar.gz
+
+    cd "$SDD_TEMP_DIR/$package" || exit 1
+
+    app_remove
+
+
+    # Bundle into single file
+    gawk -f build.awk
+
+    install -vD -m755 "build/$ALT_APP_NAME" "$SDD_BIN_DIR/$ALT_APP_NAME" >&2
+    install -vD -m644 "man/$ALT_APP_NAME.1" "$SDD_MAN_DIR/man1/$ALT_APP_NAME.1" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$ALT_APP_NAME" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$ALT_APP_NAME.1" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'soimort/translate-shell'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
