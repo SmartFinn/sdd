@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ALT_APP_NAME="todo.sh"
+
+app_info() {
+    utils:info "A simple shell script for managing your todo.txt file"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="${APP_NAME/-/_}-${version#v}"
+    local todo_config="${XDG_CONFIG_HOME:-$HOME/.config}/todo/config"
+
+    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
+        "https://github.com/todotxt/todo.txt-cli/archive/$version.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$package".tar.gz
+
+    cd "$SDD_TEMP_DIR/${package/_/-}" || exit 1
+
+    app_remove
+
+    install -vD -m755 "$ALT_APP_NAME" "$SDD_BIN_DIR/$ALT_APP_NAME" >&2
+
+    install -vD -m644 "todo_completion" \
+        "$SDD_BASH_COMPLETION_DIR/$ALT_APP_NAME" >&2
+
+    if [ ! -e "$todo_config" ]; then
+        # change location of TODO_DIR to XDG_DOCUMENTS_DIR/todo or
+        # ~/Documents/todo
+        cat > "$todo_config" <<-'EOF'
+# === EDIT FILE LOCATIONS BELOW ===
+
+# Your todo.txt directory (this should be an absolute path)
+#export TODO_DIR="/Users/gina/Documents/todo"
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/user-dirs.dirs" ] && \
+    . "${XDG_CONFIG_HOME:-$HOME/.config}/user-dirs.dirs"
+export TODO_DIR="${XDG_DOCUMENTS_DIR:-$HOME/Documents}/todo"
+EOF
+
+        tail -n+6 "todo.cfg" >> "$todo_config"
+    fi
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$ALT_APP_NAME" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$ALT_APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'todotxt/todo.txt-cli'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
