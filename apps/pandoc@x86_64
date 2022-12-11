@@ -21,7 +21,7 @@ app_install() {
     install -vD -m755 "bin/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
 
     # Install man page
-    install -vD -m755 "share/man/man1/$APP_NAME.1.gz" \
+    install -vD -m644 "share/man/man1/$APP_NAME.1.gz" \
         "$SDD_MAN_DIR/man1/$APP_NAME.1.gz" >&2
 
     # Install bash completion

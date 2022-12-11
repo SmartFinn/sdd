@@ -28,7 +28,7 @@ app_install() {
             -o "$SDD_TEMP_DIR/shellcheck.1"
 
         # Install man page
-        install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME.1" \
+        install -vD -m644 "$SDD_TEMP_DIR/$APP_NAME.1" \
             "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
     fi
 }
