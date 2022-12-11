@@ -21,7 +21,7 @@ app_install() {
     install -vD -m755 "$APP_ARCH-linux/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
 
     # Install man page
-    install -vD -m644 "$APP_NAME.1" "$SDD_MAN_DIR/man1/$APP_NAME" >&2
+    install -vD -m644 "$APP_NAME.1" "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
 
     # Install bash completions
     install -vD -m644 "completion/$APP_NAME.bash" \
