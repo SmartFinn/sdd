@@ -25,7 +25,7 @@ app_install() {
         "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
 
     install -vD -m644 "$SDD_TEMP_DIR/man/${APP_NAME}_colors.5" \
-        "$SDD_MAN_DIR/man5/$APP_NAME.5" >&2
+        "$SDD_MAN_DIR/man5/${APP_NAME}_colors.5" >&2
 
     install -vD -m644 "$SDD_TEMP_DIR/completions/$APP_NAME.bash" \
         "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
