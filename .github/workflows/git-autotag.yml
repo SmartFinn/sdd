@@ -1,0 +1,30 @@
+name: Bump git tag
+
+on:
+  pull_request:
+    types:
+      - closed
+    paths-ignore:
+      - "**.md"
+      - "**.yml"
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - "**.md"
+      - "**.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: "0"
+
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: "patch"
+          WITH_V: true
