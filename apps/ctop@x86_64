@@ -3,7 +3,7 @@
 set -euo pipefail
 
 app_info() {
-    utils:info ""
+    utils:info "Top-like interface for container metrics"
 }
 
 app_install() {
