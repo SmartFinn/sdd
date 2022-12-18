@@ -38,7 +38,7 @@ _sdd_list_installed() {
 
 _arguments -C \
     '(-h --help)'{-h,--help}'[Display help message]' \
-    '(-V --version)'{-v,--verbose}'[Display version information]' \
+    '(-V --version)'{-V,--version}'[Display version information]' \
     '1:commands:->cmds' \
     '*:arguments:->args' && ret=0
 
