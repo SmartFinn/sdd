@@ -19,9 +19,11 @@ app_install() {
     install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
 
     # Generate shell completions
+    mkdir -vp "$SDD_BASH_COMPLETION_DIR" >&2
     "$SDD_BIN_DIR/$APP_NAME" --completion bash > \
         "$SDD_BASH_COMPLETION_DIR/$APP_NAME"
 
+    mkdir -vp "$SDD_ZSH_COMPLETION_DIR" >&2
     "$SDD_BIN_DIR/$APP_NAME" --completion zsh > \
         "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME"
 }
