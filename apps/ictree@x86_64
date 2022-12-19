@@ -8,7 +8,7 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local package="${APP_NAME}-${APP_ARCH}"
+    local package="$APP_NAME-$APP_ARCH-$version"
 
     wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
         "https://github.com/NikitaIvanovV/ictree/releases/download/$version/$package.tar.gz"
