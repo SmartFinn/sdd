@@ -25,9 +25,11 @@ app_install() {
     cp -v "share/man/man1/$APP_NAME"*.1 "$SDD_MAN_DIR"/man1 >&2
 
     # Generate shell completions
+    mkdir -vp "$SDD_BASH_COMPLETION_DIR" >&2
     "$SDD_BIN_DIR/$APP_NAME" completion -s bash > \
         "$SDD_BASH_COMPLETION_DIR/$APP_NAME"
 
+    mkdir -vp "$SDD_ZSH_COMPLETION_DIR" >&2
     "$SDD_BIN_DIR/$APP_NAME" completion -s zsh > \
         "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME"
 }
