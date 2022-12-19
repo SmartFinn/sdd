@@ -26,6 +26,9 @@ app_install() {
     install -vD -m644 "todo_completion" \
         "$SDD_BASH_COMPLETION_DIR/$ALT_APP_NAME" >&2
 
+    # make sure the parent directory exists
+    mkdir -vp "${todo_config%/*}" >&2
+
     if [ ! -e "$todo_config" ]; then
         # change location of TODO_DIR to XDG_DOCUMENTS_DIR/todo or
         # ~/Documents/todo
