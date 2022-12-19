@@ -1,0 +1,45 @@
+name: Test sdd appfiles
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths-ignore:
+      - "**.md"
+  push:
+    branches: [ master, main ]
+    paths-ignore:
+      - "**.md"
+  schedule:
+    - cron: "25 4 * * 6"
+
+jobs:
+  generate-list-of-apps:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generate matrix with apps available for current arch
+        id: set-matrix
+        run: >-
+          SDD_NO_HEADER=1 ./bin/sdd list --available |
+          awk -v ORS= -v sep=
+          'BEGIN {print "matrix=["}
+          {printf "%s\"%s@%s\"", sep, $1, $2; sep=","}
+          END {print "]"}' >> $GITHUB_OUTPUT
+
+  sdd-install-remove-apps:
+    needs: generate-list-of-apps
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        appname: ${{ fromJson(needs.generate-list-of-apps.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Install/remove ${{ matrix.appname }}
+        run: |
+          ./bin/sdd install ${{ matrix.appname }}
+          ./bin/sdd remove ${{ matrix.appname }}
