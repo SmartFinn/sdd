@@ -4,15 +4,11 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - "apps/**"
-    paths-ignore:
-      - "**.md"
+      - "apps/*@*"
   push:
     branches: [ master, main ]
     paths:
-      - "apps/**"
-    paths-ignore:
-      - "**.md"
+      - "apps/*@*"
   schedule:
     - cron: "25 4 * * 6"
 
