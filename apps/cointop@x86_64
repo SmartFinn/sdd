@@ -11,7 +11,7 @@ app_install() {
     local package="${APP_NAME}_${version#v}_linux_amd64.tar.gz"
 
     wget -O "$SDD_TEMP_DIR/$package" \
-        "https://github.com/miguelmota/cointop/releases/download/$version/$package"
+        "https://github.com/cointop-sh/cointop/releases/download/$version/$package"
     utils:extract "$SDD_TEMP_DIR/$package"
 
     app_remove
@@ -24,7 +24,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'miguelmota/cointop'
+    utils:github_latest_release 'cointop-sh/cointop'
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
