@@ -19,6 +19,8 @@ app_install() {
 
     app_remove
 
+    mkdir -vp "$SDD_BIN_DIR" >&2
+
     cat > "$SDD_BIN_DIR/$APP_NAME" <<'SCRIPT_END'
 #!/usr/bin/env bash
 
