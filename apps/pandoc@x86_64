@@ -25,6 +25,7 @@ app_install() {
         "$SDD_MAN_DIR/man1/$APP_NAME.1.gz" >&2
 
     # Install bash completion
+    mkdir -vp "$SDD_BASH_COMPLETION_DIR" >&2
     "$SDD_BIN_DIR/$APP_NAME" --bash-completion > \
         "$SDD_BASH_COMPLETION_DIR/$APP_NAME"
 }
