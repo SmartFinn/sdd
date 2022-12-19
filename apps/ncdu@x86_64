@@ -8,7 +8,7 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local package="$APP_NAME-linux-$APP_ARCH-${version#v}"
+    local package="$APP_NAME-${version#v}-linux-$APP_ARCH"
 
     wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
         "https://dev.yorhel.nl/download/$package.tar.gz"
@@ -24,7 +24,8 @@ app_remove() {
 }
 
 app_version() {
-    utils:cgit_lastest_tag "g.blicky.net/ncdu.git"
+    utils:cgit_tags "g.blicky.net/ncdu.git" |
+        sed '/-beta/d' | sort -nr | head -1
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
