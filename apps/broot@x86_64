@@ -14,7 +14,7 @@ app_install() {
         "https://github.com/Canop/broot/releases/download/$version/$package"
     utils:extract "$SDD_TEMP_DIR/$package"
 
-    cd "$SDD_TEMP_DIR/build" || exit 1
+    cd "$SDD_TEMP_DIR" || exit 1
 
     app_remove
 
