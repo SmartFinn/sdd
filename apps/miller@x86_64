@@ -10,23 +10,22 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local bin_name="${ALT_APP_NAME}.linux.${APP_ARCH}"
-    local package="${ALT_APP_NAME}-${version#v}"
-
-    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
-        "https://github.com/johnkerl/miller/releases/download/$version/$bin_name"
+    local package="${APP_NAME}-${version#v}-linux-amd64"
 
     wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
         "https://github.com/johnkerl/miller/releases/download/$version/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
 
+    wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
+        "https://github.com/johnkerl/miller/archive/$version.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
+
     app_remove
 
-    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$ALT_APP_NAME" >&2
+    install -vD -m755 "$SDD_TEMP_DIR/$package/$ALT_APP_NAME" "$SDD_BIN_DIR/$ALT_APP_NAME" >&2
 
-    # Install extras
-    cd "$SDD_TEMP_DIR/$package" || exit 1
-
+    # Install man page if available
+    cd "$SDD_TEMP_DIR/$APP_NAME-${version#v}" || exit 1
     install -vD -m644 "man/$ALT_APP_NAME.1" "$SDD_MAN_DIR/man1/$ALT_APP_NAME.1" >&2
 }
 
