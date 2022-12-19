@@ -27,10 +27,10 @@ app_install() {
     mkdir -vp "$SDD_MAN_DIR/man1/" >&2
     cp -v doc/man/*.1 "$SDD_MAN_DIR"/man1 >&2
 
-    install -vD -m644 "misc/bash_completion/$APP_NAME" \
+    install -vD -m644 "misc/completion/bash/$APP_NAME" \
         "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
 
-    install -vD -m644 "misc/zsh_completion/$APP_NAME" \
+    install -vD -m644 "misc/completion/zsh/$APP_NAME" \
         "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
 }
 
