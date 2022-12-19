@@ -11,7 +11,7 @@ app_install() {
     local package="${APP_NAME}_${version#v}_linux_amd64"
 
     wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
-        "https://github.com/Matt-Gleich/fgh/releases/download/$version/$package.tar.gz"
+        "https://github.com/gleich/fgh/releases/download/$version/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
     app_remove
@@ -35,7 +35,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'Matt-Gleich/fgh'
+    utils:github_latest_release 'gleich/fgh'
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
