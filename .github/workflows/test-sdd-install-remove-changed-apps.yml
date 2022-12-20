@@ -1,0 +1,43 @@
+name: Run sdd install/remove for changed apps
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "apps/*@*"
+  push:
+    branches: [ master, main ]
+    paths:
+      - "apps/*@*"
+
+jobs:
+  list-of-changed-apps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get changed appfiles
+        id: changed-appfiles
+        uses: tj-actions/changed-files@v35
+        with:
+          json: true
+          files: |
+            apps/*@*
+
+  sdd-install-remove-app:
+    needs: changed-appfiles
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        appname: ${{ fromJson(changed-appfiles.outputs.all_changed_files) }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Install/remove ${{ matrix.appname }}
+        run: |
+          ./bin/sdd install ${{ matrix.appname }}
+          ./bin/sdd list --installed
+          ./bin/sdd remove ${{ matrix.appname }}
