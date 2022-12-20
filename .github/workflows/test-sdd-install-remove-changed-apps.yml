@@ -29,9 +29,9 @@ jobs:
       - name: Generate matrix with changed appfiles
         id: set-matrix
         run: >-
-          {echo -n "matrix=";
+          { echo -n "matrix=";
           echo "${{ steps.changed-files.outputs.all_changed_files }}" |
-          jq -c 'map(split("/")[-1]) | unique';} >> "$GITHUB_OUTPUT"
+          jq -c 'map(split("/")[-1]) | unique'; } >> "$GITHUB_OUTPUT"
 
   sdd-install-remove-app:
     needs: list-of-changed-apps
