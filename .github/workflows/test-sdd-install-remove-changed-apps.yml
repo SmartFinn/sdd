@@ -13,25 +13,33 @@ on:
 jobs:
   list-of-changed-apps:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Get changed appfiles
-        id: changed-appfiles
+        id: changed-files
         uses: tj-actions/changed-files@v35
         with:
           json: true
           files: |
             apps/*@*
+      - name: Generate matrix with changed appfiles
+        id: set-matrix
+        run: >-
+          {echo -n "matrix=";
+          echo "${{ steps.changed-files.outputs.all_changed_files }}" |
+          jq -c 'map(split("/")[-1]) | unique';} >> "$GITHUB_OUTPUT"
 
   sdd-install-remove-app:
-    needs: changed-appfiles
+    needs: list-of-changed-apps
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        appname: ${{ fromJson(changed-appfiles.outputs.all_changed_files) }}
+        appname: ${{ fromJson(needs.list-of-changed-apps.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v3
         with:
