@@ -39,7 +39,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_tag 'docker/cli'
+    utils:github_tags 'docker/cli' | grep -m1 -v 'rc\|beta\|tp'
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
