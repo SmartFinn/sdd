@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+ALT_APP_NAME="autojump"
+
 app_info() {
     utils:info "A port of the wildly popular helper application autojump to Rust"
 }
@@ -9,26 +11,23 @@ app_info() {
 app_install() {
     local version="${1:-$(app_version)}"
 
-    # Override APP_NAME to autojump
-    APP_NAME="autojump"
-
-    local package="$APP_NAME-$version-$APP_ARCH-unknown-linux-musl"
+    local package="$ALT_APP_NAME-$APP_ARCH-unknown-linux-musl"
 
     wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
         "https://github.com/xen0n/autojump-rs/releases/download/$version/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
 
-    wget -O "$SDD_TEMP_DIR"/develop.tar.gz \
-        "https://github.com/xen0n/autojump-rs/archive/develop.tar.gz"
-    utils:extract "$SDD_TEMP_DIR"/develop.tar.gz
+    wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
+        "https://github.com/xen0n/autojump-rs/archive/$version.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
 
     app_remove
 
     # Install binary
-    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+    install -vD -m755 "$SDD_TEMP_DIR/$ALT_APP_NAME" "$SDD_BIN_DIR/$ALT_APP_NAME" >&2
 
     # Install integrations
-    cd "$SDD_TEMP_DIR/autojump-rs-develop" || exit 1
+    cd "$SDD_TEMP_DIR/$APP_NAME-$version" || exit 1
 
     install -vD -m644 "integrations/autojump.sh" \
         "${XDG_DATA_HOME:-$HOME/.local/share}/autojump/autojump.sh" >&2
@@ -50,7 +49,7 @@ app_install() {
 }
 
 app_remove() {
-    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_BIN_DIR/$ALT_APP_NAME" >&2
     rm -vf "$SDD_ZSH_COMPLETION_DIR/_j" >&2
     rm -vf "${XDG_DATA_HOME:-$HOME/.local/share}/autojump/autojump.sh" >&2
     rm -vf "${XDG_DATA_HOME:-$HOME/.local/share}/autojump/autojump.bash" >&2
