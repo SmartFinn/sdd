@@ -166,7 +166,7 @@ utils:extract() {
     case "$archive" in
     *.zip)  unzip "${opts[@]}" -d "$SDD_TEMP_DIR" --  "$1" >&2 ;;
     *.tar)  tar "${opts[@]}" -C "$SDD_TEMP_DIR" -xvf  "$1" >&2 ;;
-    *.tar.bz2|*.tbz2)
+    *.tar.bz2|*.tar.bz|*.tbz2|*.tbz|*.tb2)
             tar "${opts[@]}" -C "$SDD_TEMP_DIR" -xvjf "$1" >&2 ;;
     *.tar.gz|*.tgz)
             tar "${opts[@]}" -C "$SDD_TEMP_DIR" -xvzf "$1" >&2 ;;
@@ -174,6 +174,8 @@ utils:extract() {
             tar "${opts[@]}" -C "$SDD_TEMP_DIR" -xvJf "$1" >&2 ;;
     *.tar.*)
             tar "${opts[@]}" -C "$SDD_TEMP_DIR" -xvaf "$1" >&2 ;;
+    *.bz|*.bz2)
+            cd "$SDD_TEMP_DIR" && bunzip2 -k       -- "$1" >&2 ;;
     *.xz)   cd "$SDD_TEMP_DIR" && unxz -k          -- "$1" >&2 ;;
     *.gz)   cd "$SDD_TEMP_DIR" && gunzip -k        -- "$1" >&2 ;;
     esac
