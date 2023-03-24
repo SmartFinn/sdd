@@ -27,7 +27,7 @@ utils:github_latest_release() {
 
     # Get tag name from URL redirection to avoid GitHub API limits
     awk -F'[ /]' -v e=1 '/Location:/ {e=0; print $(NF-1);} END {exit(e);}' < <(
-        wget -o- --max-redirect 0 "https://github.com/$repo/releases/latest"
+        LANG=C wget -o- --max-redirect 0 "https://github.com/$repo/releases/latest"
     )
 }
 
@@ -107,7 +107,7 @@ utils:gitea_latest_release() {
 
     # Get tag name from URL redirection to avoid TOKEN requires
     awk -F'[ /]' -v e=1 '/Location:/ {e=0; print $(NF-1);} END {exit(e);}' < <(
-        wget -o- --max-redirect 0 "https://$gitea_host/$repo/releases/latest"
+        LANG=C wget -o- --max-redirect 0 "https://$gitea_host/$repo/releases/latest"
     )
 }
 
