@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -euxo pipefail
 
 app_info() {
     utils:info "A code snippets manager for your terminal"
@@ -17,10 +17,21 @@ app_install() {
     app_remove
 
     install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Generate shell completions
+    mkdir -vp "$SDD_BASH_COMPLETION_DIR" >&2
+    "$SDD_BIN_DIR/$APP_NAME" complete bash > \
+        "$SDD_BASH_COMPLETION_DIR/$APP_NAME"
+
+    mkdir -vp "$SDD_ZSH_COMPLETION_DIR" >&2
+    "$SDD_BIN_DIR/$APP_NAME" complete zsh > \
+        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME"
 }
 
 app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
 }
 
 app_version() {
