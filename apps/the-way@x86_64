@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euxo pipefail
+set -euo pipefail
 
 app_info() {
     utils:info "A code snippets manager for your terminal"
