@@ -4,8 +4,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
 
-MACHTYPE="${MACHTYPE:-$(uname -m)}"
-export MACHTYPE
+SDD_ARCH="${SDD_ARCH:-$(uname -m)}"
+export SDD_ARCH
 
 SDD_DATA_DIR="${XDG_DATA_DIR:-$HOME/.local/share}/sdd"
 export SDD_DATA_DIR
@@ -58,7 +58,7 @@ _get_appfilepath() {
     local -a supported=()
 
     if [ -z "$app_arch" ]; then
-        case "$MACHTYPE" in
+        case "$SDD_ARCH" in
             i?86)
                 supported=( i686 any )
                 ;;
@@ -98,7 +98,7 @@ _list_appfiles() {
     local arch dir
     local -a supported=()
 
-    case "$MACHTYPE" in
+    case "$SDD_ARCH" in
         i?86)
             supported=( i686 any )
             ;;
