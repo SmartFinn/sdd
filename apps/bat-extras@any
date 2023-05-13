@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+declare -a _BAT_EXTRAS_BINS=(
+    batdiff
+    batgrep
+    batman
+    batpipe
+    batwatch
+    prettybat
+)
+
+app_info() {
+    utils:info "Bash scripts that integrate bat with various command line tools"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-${version//[v.]/}"
+
+    wget -O "$SDD_TEMP_DIR/$package.zip" \
+        "https://github.com/eth-p/bat-extras/releases/download/$version/$package.zip"
+    utils:extract "$SDD_TEMP_DIR/$package".zip
+
+    app_remove
+
+    # Install bins
+    for bin in "${_BAT_EXTRAS_BINS[@]}"; do
+        install -vD -m755 "$SDD_TEMP_DIR/bin/$bin" "$SDD_BIN_DIR/$bin" >&2
+    done
+
+    # Install man pages
+    for manpage in "${_BAT_EXTRAS_BINS[@]}"; do
+        install -vD -m644 "$SDD_TEMP_DIR/man/$manpage.1" "$SDD_MAN_DIR/man1/$manpage.1" >&2
+    done
+}
+
+app_remove() {
+    # Remove bins
+    for bin in "${_BAT_EXTRAS_BINS[@]}"; do
+        rm -vf "$SDD_BIN_DIR/$bin" >&2
+    done
+
+    # Remove man pages
+    for manpage in "${_BAT_EXTRAS_BINS[@]}"; do
+        rm -vf "$SDD_MAN_DIR/man1/$manpage.1" >&2
+    done
+}
+
+app_version() {
+    utils:github_latest_release 'eth-p/bat-extras'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
