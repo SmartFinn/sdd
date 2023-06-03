@@ -10,7 +10,7 @@ app_install() {
     local version="${1:-$(app_version)}"
 
     wget -O "$SDD_TEMP_DIR/$APP_NAME" \
-        "https://github.com/stedolan/jq/releases/download/$version/$APP_NAME-linux64"
+        "https://github.com/jqlang/jq/releases/download/$version/$APP_NAME-linux64"
 
     app_remove
 
@@ -22,7 +22,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'stedolan/jq'
+    utils:github_latest_release 'jqlang/jq'
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
