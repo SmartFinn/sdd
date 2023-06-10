@@ -10,7 +10,7 @@ app_install() {
     local version="${1:-$(app_version)}"
 
     wget -O "$SDD_TEMP_DIR/$APP_NAME" \
-        "https://raw.githubusercontent.com/so-fancy/diff-so-fancy/$version/third_party/build_fatpack/diff-so-fancy"
+        "https://github.com/so-fancy/diff-so-fancy/releases/download/$version/diff-so-fancy"
 
     app_remove
 
