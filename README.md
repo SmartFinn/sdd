@@ -29,6 +29,7 @@ Installing older versions of available apps is supported but not guaranteed.
 
 - `bash`
 - `wget`
+- `unzip`
 - `awk` or `mawk` or `busybox`
 - `coreutils` or `busybox`
 
