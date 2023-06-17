@@ -19,6 +19,13 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="$APP_NAME-${version//[v.]/}"
 
+    # Override package name for specific version
+    case "$version" in
+        v2023.06.15)
+            package="$APP_NAME-202303.21"
+            ;;
+    esac
+
     wget -O "$SDD_TEMP_DIR/$package.zip" \
         "https://github.com/eth-p/bat-extras/releases/download/$version/$package.zip"
     utils:extract "$SDD_TEMP_DIR/$package".zip
