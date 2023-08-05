@@ -8,7 +8,7 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local package="$APP_NAME-static-$APP_ARCH"
+    local package="$APP_NAME-static-linux-$APP_ARCH"
 
     wget -O "$SDD_TEMP_DIR/$APP_NAME" \
         "https://github.com/doronbehar/pistol/releases/download/$version/$package"
