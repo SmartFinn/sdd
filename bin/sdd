@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=2317
 
 set -euo pipefail
 
@@ -294,8 +295,8 @@ _sdd_uninstall() {
 sdd_upgrade() {
     local app_name
 
-    sdd_list --upgradable  | while read -r app_name _ _ _; do
-		_validate_apps "$app_name" || continue
+    sdd_list --upgradable | while read -r app_name _ _ _; do
+        _validate_apps "$app_name" || continue
         sdd_runner install "$app_name" || continue
     done
 }
