@@ -10,6 +10,13 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="$APP_NAME-v${version}-$APP_ARCH-unknown-linux-musl"
 
+    # Override the package name for specific version
+    case "$version" in
+    v*)
+        package="$APP_NAME-${version}-$APP_ARCH-unknown-linux-musl"
+        ;;
+    esac
+
     wget -O "$SDD_TEMP_DIR/$package".tar.gz \
         "https://github.com/imsnif/bandwhich/releases/download/$version/$package".tar.gz
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
