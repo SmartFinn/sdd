@@ -21,14 +21,29 @@ app_install() {
         "https://github.com/imsnif/bandwhich/releases/download/$version/$package".tar.gz
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
+    wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
+        "https://github.com/imsnif/bandwhich/archive/$version.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$version".tar.gz
+
+    cd "$SDD_TEMP_DIR/${APP_NAME}-${version#v}" || exit 1
+
     app_remove
 
     # Install binary
     install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Install man page
+    install -vD -m644 "docs/$APP_NAME.1" "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+
+    # Install bash completion
+    install -vD -m644 "completion/$APP_NAME" \
+        "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
 }
 
 app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
 }
 
 app_version() {
