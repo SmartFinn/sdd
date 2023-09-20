@@ -38,6 +38,11 @@ app_install() {
     # Install bash completion
     install -vD -m644 "completion/$APP_NAME" \
         "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+
+    cat <<POST_INSTALL_MSG
+$APP_NAME: To allow run $APP_NAME without root permission, please set the file capabilities manually:
+$APP_NAME: sudo setcap 'cap_sys_ptrace,cap_dac_read_search,cap_net_raw,cap_net_admin+ep' "$SDD_BIN_DIR/$APP_NAME"
+POST_INSTALL_MSG
 }
 
 app_remove() {
