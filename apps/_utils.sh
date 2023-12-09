@@ -180,3 +180,35 @@ utils:extract() {
     *.gz)   cd "$SDD_TEMP_DIR" && gunzip -k        -- "$1" >&2 ;;
     esac
 }
+
+utils:compare_versions() {
+    # usage: utils:compare_versions ver1 op ver2
+    local ver_left="${1?}"
+    local operator="${2?}"
+    local ver_right="${3?}"
+
+    case "$operator" in
+    lt)
+        [[ "$ver_left" < "$ver_right" ]]
+        ;;
+    gt)
+        [[ "$ver_left" > "$ver_right" ]]
+        ;;
+    eq)
+        [[ "$ver_left" == "$ver_right" ]]
+        ;;
+    ne)
+        [[ "$ver_left" != "$ver_right" ]]
+        ;;
+    le)
+        [[ "$ver_left" < "$ver_right" ]] || [[ "$ver_left" == "$ver_right" ]]
+        ;;
+    ge)
+        [[ "$ver_left" > "$ver_right" ]] || [[ "$ver_left" == "$ver_right" ]]
+        ;;
+    *)
+        echo "usage: ${FUNCNAME[0]} ver1 lt|le|gt|ge|eq|ne ver2" >&2
+        exit 1
+        ;;
+    esac
+}
