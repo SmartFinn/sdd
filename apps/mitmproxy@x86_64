@@ -10,6 +10,10 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="${APP_NAME}-${version}-linux"
 
+    if utils:compare_versions "$version" ge "10.1.6"; then
+        package="${APP_NAME}-${version}-linux-${APP_ARCH}"
+    fi
+
     wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
         "https://snapshots.mitmproxy.org/$version/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
