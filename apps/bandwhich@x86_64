@@ -21,23 +21,27 @@ app_install() {
         "https://github.com/imsnif/bandwhich/releases/download/$version/$package".tar.gz
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
-    wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
-        "https://github.com/imsnif/bandwhich/archive/$version.tar.gz"
-    utils:extract "$SDD_TEMP_DIR/$version".tar.gz
+    if utils:compare_versions "${version#v}" lt "0.22.0"; then
+        wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
+            "https://github.com/imsnif/bandwhich/archive/$version.tar.gz"
+        utils:extract "$SDD_TEMP_DIR/$version".tar.gz
 
-    cd "$SDD_TEMP_DIR/${APP_NAME}-${version#v}" || exit 1
+        cd "$SDD_TEMP_DIR/${APP_NAME}-${version#v}" || exit 1
+    fi
 
     app_remove
 
     # Install binary
     install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
 
-    # Install man page
-    install -vD -m644 "docs/$APP_NAME.1" "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+    if utils:compare_versions "${version#v}" lt "0.22.0"; then
+        # Install man page
+        install -vD -m644 "docs/$APP_NAME.1" "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
 
-    # Install bash completion
-    install -vD -m644 "completion/$APP_NAME" \
-        "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+        # Install bash completion
+        install -vD -m644 "completion/$APP_NAME" \
+            "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    fi
 
     cat <<POST_INSTALL_MSG
 $APP_NAME: To allow run $APP_NAME without root permission, please set the file capabilities manually:
