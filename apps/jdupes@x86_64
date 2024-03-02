@@ -11,7 +11,7 @@ app_install() {
     local package="${APP_NAME}-${version#v}-linux-${APP_ARCH}"
 
     wget -O "$SDD_TEMP_DIR/$package.pkg.tar.xz" \
-        "https://github.com/jbruchon/jdupes/releases/download/$version/$package.pkg.tar.xz"
+        "https://codeberg.org/jbruchon/jdupes/releases/download/$version/$package.pkg.tar.xz"
     utils:extract "$SDD_TEMP_DIR/$package.pkg.tar.xz"
 
     cd "$SDD_TEMP_DIR/$package" || exit 1
@@ -26,7 +26,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'jbruchon/jdupes'
+    utils:gitea_latest_release 'jbruchon/jdupes' 'codeberg.org'
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
