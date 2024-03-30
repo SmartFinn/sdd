@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "Blazing fast terminal file manager written in Rust, based on async I/O"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-$APP_ARCH-unknown-linux-gnu"
+
+    wget -O "$SDD_TEMP_DIR/$package.zip" \
+        "https://github.com/sxyazi/yazi/releases/download/$version/$package.zip"
+    utils:extract "$SDD_TEMP_DIR/$package".zip
+
+    cd "$SDD_TEMP_DIR/$package" || exit 1
+
+    app_remove
+
+    install -vD -m755 "$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Install bash completion
+    install -vD -m644 "completions/$APP_NAME.bash" \
+        "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+
+    # Install zsh completion
+    install -vD -m644 "completions/_$APP_NAME" \
+        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'sxyazi/yazi'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
