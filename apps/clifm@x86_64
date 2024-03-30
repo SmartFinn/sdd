@@ -39,7 +39,7 @@ app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
     rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
     rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
-    rm -vf "$SDD_MAN_DIR/man1/$APP_NAME.1.gz"
+    rm -vf "$SDD_MAN_DIR/man1/$APP_NAME.1.gz" >&2
 }
 
 app_version() {
