@@ -8,7 +8,12 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local package="$APP_NAME-linux-musl"
+    local package="$APP_NAME-linux-${APP_ARCH}"
+
+    # Change the package name for version under v0.26
+    if utils:compare_versions "${version#v}" lt "0.26"; then
+        package="$APP_NAME-linux-musl"
+    fi
 
     wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
         "https://github.com/extrawurst/gitui/releases/download/$version/$package.tar.gz"
