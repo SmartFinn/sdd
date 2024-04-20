@@ -8,6 +8,10 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
+
+    # Remove prefix from version
+    version="${version#v}"
+
     local package="${APP_NAME}-${version}-linux"
 
     if utils:compare_versions "$version" ge "10.1.6"; then
