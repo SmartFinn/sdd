@@ -3,18 +3,24 @@
 set -euo pipefail
 
 app_info() {
-    utils:info "A cat(1) clone with wings."
+    utils:info "A tool for glamorous shell scripts"
 }
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local package="${APP_NAME}_${version#v}_linux_$APP_ARCH"
+    local package="${APP_NAME}_${version#v}_Linux_${APP_ARCH}"
 
     wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
         "https://github.com/charmbracelet/gum/releases/download/$version/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
-    cd "$SDD_TEMP_DIR" || exit 1
+    # Add subdirectory to path for v0.14.0 and newer
+    if utils:compare_versions "${version#v}" ge "0.14.0"; then
+        cd "$SDD_TEMP_DIR/$package" || exit 1
+    else
+        # for v0.13.0 and older
+        cd "$SDD_TEMP_DIR" || exit 1
+    fi
 
     app_remove
 
