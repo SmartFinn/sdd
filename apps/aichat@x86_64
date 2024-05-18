@@ -14,13 +14,38 @@ app_install() {
         "https://github.com/sigoden/aichat/releases/download/$version/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
+    wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
+        "https://github.com/sigoden/aichat/archive/$version.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
+
     app_remove
 
     install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    cd "$SDD_TEMP_DIR/$APP_NAME-${version#v}" || exit 1
+
+    # Install integrations
+    for e in bash fish nu ps1 zsh; do
+        install -vD -m644 "scripts/shell-integration/integration.$e" \
+            "${XDG_DATA_HOME:-$HOME/.local/share}/aichat/shell-integration/integration.$e" >&2
+    done
+
+    # Install bash completion
+    install -vD -m644 "scripts/completions/$APP_NAME.bash" \
+        "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+
+    # Install zsh completion
+    install -vD -m644 "scripts/completions/$APP_NAME.zsh" \
+        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
 }
 
 app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "${XDG_DATA_HOME:-$HOME/.local/share}/aichat/shell-integration/integration."* >&2
+    rmdir -v "${XDG_DATA_HOME:-$HOME/.local/share}/$APP_NAME/shell-integration" >&2 || true
+    rmdir -v "${XDG_DATA_HOME:-$HOME/.local/share}/$APP_NAME" >&2 || true
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
 }
 
 app_version() {
