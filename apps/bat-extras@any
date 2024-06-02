@@ -17,18 +17,17 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
+    local _version="${version#v}"
+    local package="$APP_NAME-$_version"
 
     # Set the package name for specific version
-    case "$version" in
-    v2019*|v2020*|v2021*|v2022*|v2023.03.21)
-        # remove leading v and all periods from version
-        local package="$APP_NAME-${version//[v.]/}"
-        ;;
-    *)
-        # remove leading v and the first period
-        local _package_ver="${version#v}"
-        local package="$APP_NAME-${_package_ver/./}"
-    esac
+    if utils:compare_versions "$_version" le "2023.03.21"; then
+        # remove all periods from version
+        package="$APP_NAME-${_version//./}"
+    elif utils:compare_versions "$_version" le "2024.02.12"; then
+        # remove the first period
+        package="$APP_NAME-${_version/./}"
+    fi
 
     wget -O "$SDD_TEMP_DIR/$package.zip" \
         "https://github.com/eth-p/bat-extras/releases/download/$version/$package.zip"
