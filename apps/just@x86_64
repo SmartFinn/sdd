@@ -14,10 +14,6 @@ app_install() {
         "https://github.com/casey/just/releases/download/$version/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
 
-    wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
-        "https://github.com/casey/just/archive/$version.tar.gz"
-    utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
-
     app_remove
 
     # Install binary
@@ -27,7 +23,15 @@ app_install() {
         "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
 
     # Install extras
-    cd "$SDD_TEMP_DIR/$APP_NAME-${version#v}" || exit 1
+    if utils:compare_versions "$version" lt "1.23.0"; then
+        wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
+            "https://github.com/casey/just/archive/$version.tar.gz"
+        utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
+
+        cd "$SDD_TEMP_DIR/$APP_NAME-${version#v}" || exit 1
+    else
+        cd "$SDD_TEMP_DIR" || exit 1
+    fi
 
     install -vD -m644 "completions/$APP_NAME.bash" \
         "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
