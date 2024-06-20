@@ -10,16 +10,19 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="${APP_NAME}-${version#[vV]}-linux-amd64"
 
-    wget -O "$SDD_TEMP_DIR/$APP_NAME.xz" \
-        "https://gitea.com/gitea/tea/releases/download/$version/$package.xz"
+    utils:get_file \
+        "https://gitea.com/gitea/tea/releases/download/$version/$package.xz" \
+        "$SDD_TEMP_DIR/$APP_NAME.xz"
     utils:extract "$SDD_TEMP_DIR/$APP_NAME".xz
 
     # TODO: uncomment lines below when autocomplete will work correctly
-    # wget -O "$SDD_TEMP_DIR/$APP_NAME.sh" \
-    #     "https://gitea.com/gitea/tea/raw/tag/${version}/contrib/autocomplete.sh"
+    # utils:get_file \
+    #     "https://gitea.com/gitea/tea/raw/tag/${version}/contrib/autocomplete.sh" \
+    #     "$SDD_TEMP_DIR/$APP_NAME.sh"
     #
-    # wget -O "$SDD_TEMP_DIR/$APP_NAME.zsh" \
-    #     "https://gitea.com/gitea/tea/raw/tag/${version}/contrib/autocomplete.zsh"
+    # utils:get_file \
+    #     "https://gitea.com/gitea/tea/raw/tag/${version}/contrib/autocomplete.zsh" \
+    #     "$SDD_TEMP_DIR/$APP_NAME.zsh"
     # sed -i "s/\$PROG/$APP_NAME/g" "$SDD_TEMP_DIR/$APP_NAME.zsh"
 
     app_remove

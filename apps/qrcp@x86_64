@@ -14,8 +14,9 @@ app_install() {
         package="${APP_NAME}_${version}_linux_${APP_ARCH}.tar.gz"
     fi
 
-    wget -O "$SDD_TEMP_DIR/$package" \
-        "https://github.com/claudiodangelis/qrcp/releases/download/$version/$package"
+    utils:get_file \
+        "https://github.com/claudiodangelis/qrcp/releases/download/$version/$package" \
+        "$SDD_TEMP_DIR/$package"
     utils:extract "$SDD_TEMP_DIR/$package"
 
     app_remove

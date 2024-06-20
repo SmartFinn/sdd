@@ -10,8 +10,9 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="$APP_NAME-${version}_${APP_ARCH//_/-}-linux"
 
-    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
-        "https://github.com/smallhadroncollider/taskell/releases/download/$version/$package.tar.gz"
+    utils:get_file \
+        "https://github.com/smallhadroncollider/taskell/releases/download/$version/$package.tar.gz" \
+        "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
 
     app_remove

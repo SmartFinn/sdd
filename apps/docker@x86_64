@@ -9,15 +9,18 @@ app_info() {
 app_install() {
     local version="${1:-$(app_version)}"
 
-    wget -O "$SDD_TEMP_DIR/$APP_NAME.tar.gz" \
-        "https://download.docker.com/linux/static/stable/$APP_ARCH/$APP_NAME-${version#v}.tgz"
+    utils:get_file \
+        "https://download.docker.com/linux/static/stable/$APP_ARCH/$APP_NAME-${version#v}.tgz" \
+        "$SDD_TEMP_DIR/$APP_NAME.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$APP_NAME.tar.gz"
 
     # Download completions
-    wget -O "$SDD_TEMP_DIR/$APP_NAME.bash" \
-        "https://raw.githubusercontent.com/docker/cli/${version}/contrib/completion/bash/docker"
-    wget -O "$SDD_TEMP_DIR/$APP_NAME.zsh" \
-        "https://raw.githubusercontent.com/docker/cli/${version}/contrib/completion/zsh/_docker"
+    utils:get_file \
+        "https://raw.githubusercontent.com/docker/cli/${version}/contrib/completion/bash/docker" \
+        "$SDD_TEMP_DIR/$APP_NAME.bash"
+    utils:get_file \
+        "https://raw.githubusercontent.com/docker/cli/${version}/contrib/completion/zsh/_docker" \
+        "$SDD_TEMP_DIR/$APP_NAME.zsh"
 
     app_remove
 

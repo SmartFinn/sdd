@@ -13,14 +13,17 @@ app_install() {
     # Override APP_NAME to tldr
     APP_NAME="tldr"
 
-    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
-        "https://github.com/dbrgn/tealdeer/releases/download/$version/$package"
+    utils:get_file \
+        "https://github.com/dbrgn/tealdeer/releases/download/$version/$package" \
+        "$SDD_TEMP_DIR/$APP_NAME"
 
     # Download completions
-    wget -O "$SDD_TEMP_DIR/$APP_NAME.bash" \
-        "https://github.com/dbrgn/tealdeer/releases/download/$version/completions_bash"
-    wget -O "$SDD_TEMP_DIR/$APP_NAME.zsh" \
-        "https://github.com/dbrgn/tealdeer/releases/download/$version/completions_zsh"
+    utils:get_file \
+        "https://github.com/dbrgn/tealdeer/releases/download/$version/completions_bash" \
+        "$SDD_TEMP_DIR/$APP_NAME.bash"
+    utils:get_file \
+        "https://github.com/dbrgn/tealdeer/releases/download/$version/completions_zsh" \
+        "$SDD_TEMP_DIR/$APP_NAME.zsh"
 
     app_remove
 

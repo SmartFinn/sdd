@@ -10,8 +10,9 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="${APP_NAME}.${APP_ARCH}-unknown-linux-musl"
 
-    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
-        "https://github.com/bvaisvil/zenith/releases/download/$version/$package.tgz"
+    utils:get_file \
+        "https://github.com/bvaisvil/zenith/releases/download/$version/$package.tgz" \
+        "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
     app_remove

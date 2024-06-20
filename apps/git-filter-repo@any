@@ -10,8 +10,9 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="${APP_NAME}-${version#v}"
 
-    wget -O "$SDD_TEMP_DIR/$package.tar.xz" \
-        "https://github.com/newren/git-filter-repo/releases/download/$version/$package.tar.xz"
+    utils:get_file \
+        "https://github.com/newren/git-filter-repo/releases/download/$version/$package.tar.xz" \
+        "$SDD_TEMP_DIR/$package.tar.xz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.xz
 
     app_remove

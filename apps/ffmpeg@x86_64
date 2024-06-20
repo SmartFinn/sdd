@@ -10,8 +10,9 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="$APP_NAME-$version-amd64-static"
 
-    wget -O "$SDD_TEMP_DIR/$package.tar.xz" \
-        "https://johnvansickle.com/ffmpeg/releases/$package.tar.xz"
+    utils:get_file \
+        "https://johnvansickle.com/ffmpeg/releases/$package.tar.xz" \
+        "$SDD_TEMP_DIR/$package.tar.xz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.xz
 
     cd "$SDD_TEMP_DIR/$package" || exit 1
@@ -37,7 +38,7 @@ app_remove() {
 }
 
 app_version() {
-    wget -qO- 'https://johnvansickle.com/ffmpeg/release-readme.txt' |
+    curl -sSL 'https://johnvansickle.com/ffmpeg/release-readme.txt' |
         awk '/version:/ {i[n++] = $2;} END {print i[0];}'
 }
 

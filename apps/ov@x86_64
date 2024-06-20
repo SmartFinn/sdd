@@ -10,8 +10,9 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="${APP_NAME}_${version#v}_linux_amd64.zip"
 
-    wget -O "$SDD_TEMP_DIR/$package" \
-        "https://github.com/noborus/ov/releases/download/$version/$package"
+    utils:get_file \
+        "https://github.com/noborus/ov/releases/download/$version/$package" \
+        "$SDD_TEMP_DIR/$package"
     utils:extract "$SDD_TEMP_DIR/$package"
 
     app_remove

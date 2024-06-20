@@ -9,8 +9,9 @@ app_info() {
 app_install() {
     local version="${1:-$(app_version)}"
 
-    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
-        "https://github.com/nachoparker/dutree/releases/download/$version/$APP_NAME"
+    utils:get_file \
+        "https://github.com/nachoparker/dutree/releases/download/$version/$APP_NAME" \
+        "$SDD_TEMP_DIR/$APP_NAME"
 
     app_remove
 

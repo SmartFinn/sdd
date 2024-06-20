@@ -9,8 +9,9 @@ app_info() {
 app_install() {
     local version="${1:-$(app_version)}"
 
-    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
-        "https://github.com/asciimoo/wuzz/releases/download/$version/${APP_NAME}_linux_amd64"
+    utils:get_file \
+        "https://github.com/asciimoo/wuzz/releases/download/$version/${APP_NAME}_linux_amd64" \
+        "$SDD_TEMP_DIR/$APP_NAME"
 
     app_remove
 

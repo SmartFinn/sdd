@@ -10,8 +10,9 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="$APP_NAME-$version"
 
-    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
-        "https://gitlab.com/esr/src/-/archive/${version}/$package.tar.gz"
+    utils:get_file \
+        "https://gitlab.com/esr/src/-/archive/${version}/$package.tar.gz" \
+        "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
     cd "$SDD_TEMP_DIR/$package" || exit 1

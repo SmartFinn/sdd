@@ -13,8 +13,9 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="JetBrainsMono"
 
-    wget -O "$SDD_TEMP_DIR/$version.zip" \
-        "https://github.com/ryanoasis/nerd-fonts/releases/download/$version/$package".zip
+    utils:get_file \
+        "https://github.com/ryanoasis/nerd-fonts/releases/download/$version/$package".zip \
+        "$SDD_TEMP_DIR/$version.zip"
     utils:extract "$SDD_TEMP_DIR/$version.zip"
 
     cd "$SDD_TEMP_DIR" || exit 1

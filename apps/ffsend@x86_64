@@ -10,8 +10,9 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="$APP_NAME-$version-linux-x64-static"
 
-    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
-        "https://github.com/timvisee/ffsend/releases/download/$version/$package"
+    utils:get_file \
+        "https://github.com/timvisee/ffsend/releases/download/$version/$package" \
+        "$SDD_TEMP_DIR/$APP_NAME"
 
     app_remove
 

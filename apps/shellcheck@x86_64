@@ -10,8 +10,9 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="$APP_NAME-$version.linux.$APP_ARCH.tar.xz"
 
-    wget -O "$SDD_TEMP_DIR/$package" \
-        "https://github.com/koalaman/shellcheck/releases/download/$version/$package"
+    utils:get_file \
+        "https://github.com/koalaman/shellcheck/releases/download/$version/$package" \
+        "$SDD_TEMP_DIR/$package"
     utils:extract "$SDD_TEMP_DIR/$package"
 
     app_remove
@@ -20,8 +21,9 @@ app_install() {
         "$SDD_BIN_DIR/$APP_NAME" >&2
 
     if command -v pandoc >/dev/null; then
-        wget -O "$SDD_TEMP_DIR/shellcheck.1.md" \
-            https://raw.githubusercontent.com/koalaman/shellcheck/"$version"/shellcheck.1.md
+        utils:get_file \
+            https://raw.githubusercontent.com/koalaman/shellcheck/"$version"/shellcheck.1.md \
+            "$SDD_TEMP_DIR/shellcheck.1.md"
 
         # Generating man page using pandoc
         pandoc -s -f markdown-smart -t man "$SDD_TEMP_DIR/shellcheck.1.md" \

@@ -11,8 +11,9 @@ app_install() {
     local package="$APP_NAME-${version#v}"
     local install_dir="${XDG_DATA_HOME:-$HOME/.local/share}/$APP_NAME"
 
-    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
-        "https://github.com/kazhala/dotbare/archive/$version.tar.gz"
+    utils:get_file \
+        "https://github.com/kazhala/dotbare/archive/$version.tar.gz" \
+        "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
     cd "$SDD_TEMP_DIR/$package" || exit 1

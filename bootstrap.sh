@@ -15,7 +15,7 @@ set -e
 gh_url="https://github.com/SmartFinn/sdd"
 
 # make sure that required commands are available
-for cmd in wget bash tar; do
+for cmd in curl bash tar; do
 	command -v bash >/dev/null && continue
 	echo "!! Error: unable to find '$cmd' command. Please install it first." >&2
 	exit 1
@@ -32,7 +32,7 @@ cleanup() {
 }
 
 echo "=> Downloading '$gh_url/archive/$TAG.tar.gz'..."
-wget -O "$TEMP_DIR/$TAG.tar.gz" "$gh_url/archive/$TAG.tar.gz"
+curl -sSLo "$TEMP_DIR/$TAG.tar.gz" "$gh_url/archive/$TAG.tar.gz"
 
 echo "=> Extract '$TAG.tar.gz' into '$TEMP_DIR'..."
 tar -C "$TEMP_DIR" -xzf "$TEMP_DIR/$TAG.tar.gz"

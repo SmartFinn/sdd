@@ -10,11 +10,13 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="${APP_NAME}_linux_amd64_binary"
 
-    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
-        "https://github.com/gsamokovarov/jump/releases/download/$version/$package"
+    utils:get_file \
+        "https://github.com/gsamokovarov/jump/releases/download/$version/$package" \
+        "$SDD_TEMP_DIR/$APP_NAME"
 
-    wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
-        "https://github.com/gsamokovarov/jump/archive/$version.tar.gz"
+    utils:get_file \
+        "https://github.com/gsamokovarov/jump/archive/$version.tar.gz" \
+        "$SDD_TEMP_DIR/$version.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
 
     app_remove

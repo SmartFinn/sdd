@@ -9,8 +9,9 @@ app_info() {
 app_install() {
     local version="${1:-$(app_version)}"
 
-    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
-        "https://github.com/jqlang/jq/releases/download/$version/$APP_NAME-linux64"
+    utils:get_file \
+        "https://github.com/jqlang/jq/releases/download/$version/$APP_NAME-linux64" \
+        "$SDD_TEMP_DIR/$APP_NAME"
 
     app_remove
 

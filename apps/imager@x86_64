@@ -10,8 +10,9 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="$APP_NAME-v${version##*/}-linux"
 
-    wget -O "$SDD_TEMP_DIR/$package.tar.gz" \
-        "https://github.com/imager-io/imager/releases/download/${version//\//%2F}/$package.tar.gz"
+    utils:get_file \
+        "https://github.com/imager-io/imager/releases/download/${version//\//%2F}/$package.tar.gz" \
+        "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
     app_remove

@@ -10,12 +10,14 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="${APP_NAME}_${version#v}_linux_amd64"
 
-    wget -O "$SDD_TEMP_DIR/$package".bz2 \
-        "https://github.com/restic/restic/releases/download/$version/$package".bz2
+    utils:get_file \
+        "https://github.com/restic/restic/releases/download/$version/$package".bz2 \
+        "$SDD_TEMP_DIR/$package".bz2
     utils:extract "$SDD_TEMP_DIR/$package".bz2
 
-    wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
-        "https://github.com/restic/restic/archive/$version.tar.gz"
+    utils:get_file \
+        "https://github.com/restic/restic/archive/$version.tar.gz" \
+        "$SDD_TEMP_DIR/$version.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
 
     app_remove

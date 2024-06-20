@@ -10,8 +10,9 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="${APP_NAME}_${version#v}.zip"
 
-    wget -O "$SDD_TEMP_DIR/$package" \
-        "https://github.com/Canop/broot/releases/download/$version/$package"
+    utils:get_file \
+        "https://github.com/Canop/broot/releases/download/$version/$package" \
+        "$SDD_TEMP_DIR/$package"
     utils:extract "$SDD_TEMP_DIR/$package"
 
     cd "$SDD_TEMP_DIR" || exit 1

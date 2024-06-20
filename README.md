@@ -28,7 +28,7 @@ Installing older versions of available apps is supported but not guaranteed.
 `sdd` requires a few dependencies:
 
 - `bash`
-- `wget`
+- `curl`
 - `unzip`
 - `awk` or `mawk` or `busybox`
 - `coreutils` or `busybox`

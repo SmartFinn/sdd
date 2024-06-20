@@ -11,8 +11,9 @@ app_install() {
     local package="${APP_NAME}_${APP_ARCH}-unknown-linux-gnu"
     local _version="${version#v}"
 
-    wget -O "$SDD_TEMP_DIR/$package".tar.gz \
-        "https://github.com/eza-community/eza/releases/download/$version/$package".tar.gz
+    utils:get_file \
+        "https://github.com/eza-community/eza/releases/download/$version/$package".tar.gz \
+        "$SDD_TEMP_DIR/$package".tar.gz
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
     app_remove
@@ -23,12 +24,14 @@ app_install() {
 
     # Install extras
     if utils:compare_versions "$_version" ge "0.18.13"; then
-        wget -O "$SDD_TEMP_DIR/completions-$_version".tar.gz \
-            "https://github.com/eza-community/eza/releases/download/$version/completions-$_version".tar.gz
+        utils:get_file \
+            "https://github.com/eza-community/eza/releases/download/$version/completions-$_version".tar.gz \
+            "$SDD_TEMP_DIR/completions-$_version".tar.gz
         utils:extract "$SDD_TEMP_DIR/completions-$_version".tar.gz
 
-        wget -O "$SDD_TEMP_DIR/man-$_version".tar.gz \
-            "https://github.com/eza-community/eza/releases/download/$version/man-$_version".tar.gz
+        utils:get_file \
+            "https://github.com/eza-community/eza/releases/download/$version/man-$_version".tar.gz \
+            "$SDD_TEMP_DIR/man-$_version".tar.gz
         utils:extract "$SDD_TEMP_DIR/man-$_version".tar.gz
 
         install -vD -m644 "$SDD_TEMP_DIR/target/completions-$_version/$APP_NAME" \

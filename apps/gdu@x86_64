@@ -10,12 +10,14 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="${APP_NAME}_linux_amd64"
 
-    wget -O "$SDD_TEMP_DIR/$package.tgz" \
-        "https://github.com/dundee/gdu/releases/download/$version/$package.tgz"
+    utils:get_file \
+        "https://github.com/dundee/gdu/releases/download/$version/$package.tgz" \
+        "$SDD_TEMP_DIR/$package.tgz"
     utils:extract "$SDD_TEMP_DIR/$package".tgz
 
-    wget -O "$SDD_TEMP_DIR/$version.tar.gz" \
-        "https://github.com/dundee/gdu/archive/$version.tar.gz"
+    utils:get_file \
+        "https://github.com/dundee/gdu/archive/$version.tar.gz" \
+        "$SDD_TEMP_DIR/$version.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
 
     app_remove

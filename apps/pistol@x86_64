@@ -10,11 +10,13 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="$APP_NAME-static-linux-$APP_ARCH"
 
-    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
-        "https://github.com/doronbehar/pistol/releases/download/$version/$package"
+    utils:get_file \
+        "https://github.com/doronbehar/pistol/releases/download/$version/$package" \
+        "$SDD_TEMP_DIR/$APP_NAME"
 
-    wget -O "$SDD_TEMP_DIR/$APP_NAME.1.gz" \
-        "https://github.com/doronbehar/pistol/releases/download/$version/$APP_NAME.1.gz"
+    utils:get_file \
+        "https://github.com/doronbehar/pistol/releases/download/$version/$APP_NAME.1.gz" \
+        "$SDD_TEMP_DIR/$APP_NAME.1.gz"
 
     app_remove
 

@@ -10,8 +10,9 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="${APP_NAME}_linux_amd64"
 
-    wget -O "$SDD_TEMP_DIR/$APP_NAME" \
-        "https://github.com/mikefarah/yq/releases/download/$version/$package"
+    utils:get_file \
+        "https://github.com/mikefarah/yq/releases/download/$version/$package" \
+        "$SDD_TEMP_DIR/$APP_NAME"
 
     app_remove
 
