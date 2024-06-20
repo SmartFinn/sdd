@@ -37,7 +37,7 @@ utils:github_latest_commit_hash() {
     local branch="${2:-master}"
 
     # Get latest commit hash from atom feed to avoid GitHub API limits
-    curl -A "Mozilla/5.0" -L "https://github.com/$repo/commits/$branch.atom" |
+    curl -A "Mozilla/5.0" -sSL "https://github.com/$repo/commits/$branch.atom" |
         awk -F'[/<>]' '/<id>tag:github.com,2008:Grit::Commit/ {i[n++] = $(NF-3);}
         END {print i[0];}'
 }
@@ -46,7 +46,7 @@ utils:github_latest_tag() {
     local repo="${1?}"
 
     # Get latest tag from atom feed to avoid GitHub API limits
-    curl -A "Mozilla/5.0" -L "https://github.com/$repo/tags.atom" |
+    curl -A "Mozilla/5.0" -sSL "https://github.com/$repo/tags.atom" |
         awk -F'[/<>]' '/<id>tag:github.com,2008:Repository/ {i[n++] = $(NF-3);}
             END {print i[0];}'
 }
@@ -55,7 +55,7 @@ utils:github_tags() {
     local repo="${1?}"
 
     # Get tags from atom feed to avoid GitHub API limits
-    curl -A "Mozilla/5.0" -L "https://github.com/$repo/tags.atom" |
+    curl -A "Mozilla/5.0" -sSL "https://github.com/$repo/tags.atom" |
         sed -n 's/[ ]*<id>tag:github.com,2008:Repository\/[0-9]\+\/\(.*\)<\/id>/\1/p'
 }
 
@@ -63,7 +63,7 @@ utils:github_releases() {
     local repo="${1?}"
 
     # Get all releases from atom feed to avoid GitHub API limits
-    curl -A "Mozilla/5.0" -L "https://github.com/$repo/releases.atom" |
+    curl -A "Mozilla/5.0" -sSL "https://github.com/$repo/releases.atom" |
         awk -F'[/<>]' '/<id>tag:github.com,2008:Repository/ {print $(NF-3);}'
 }
 
@@ -72,7 +72,7 @@ utils:gitlab_latest_tag() {
     local gitlab_host="${2:-gitlab.com}"
 
     # Get latest tag from atom feed to avoid GitLab API limits
-    curl -A "Mozilla/5.0" -L "https://$gitlab_host/$repo/-/tags?format=atom" |
+    curl -A "Mozilla/5.0" -sSL "https://$gitlab_host/$repo/-/tags?format=atom" |
         awk -F'[/<>]' '/\/-\/tags\/.*<\/id>/ {i[n++] = $(NF-3);}
             END {print i[0];}'
 }
@@ -82,7 +82,7 @@ utils:gitlab_tags() {
     local gitlab_host="${2:-gitlab.com}"
 
     # Get tags from atom feed to avoid GitLab API limits
-    curl -A "Mozilla/5.0" -L "https://$gitlab_host/$repo/-/tags?format=atom" |
+    curl -A "Mozilla/5.0" -sSL "https://$gitlab_host/$repo/-/tags?format=atom" |
         sed -n 's/.*\/-\/tags\/\(.*\)<\/id>/\1/p'
 }
 
@@ -90,7 +90,7 @@ utils:cgit_lastest_tag() {
     local cgit_repo_url="${1?}"
 
     # Get tags from cgit web interface
-    curl -A "Mozilla/5.0" -L "$cgit_repo_url/refs/" |
+    curl -A "Mozilla/5.0" -sSL "$cgit_repo_url/refs/" |
         awk -F"['=]" '/\/tag\/\?h=/ {i[n++] = $4;} END {print i[0];}'
 }
 
@@ -98,7 +98,7 @@ utils:cgit_tags() {
     local cgit_repo_url="${1?}"
 
     # Get tags from cgit web interface
-    curl -A "Mozilla/5.0" -L "$cgit_repo_url/refs/" |
+    curl -A "Mozilla/5.0" -sSL "$cgit_repo_url/refs/" |
         sed -n "s/.*\/tag\/?h=\([^']\+\)'>.*/\1/p"
 }
 
@@ -118,7 +118,7 @@ utils:gitea_tags() {
     local gitea_host="${2:-gitea.com}"
 
     # Get tags from Gitea web interface to avoid TOKEN requires
-    curl -A "Mozilla/5.0" -L "https://$gitea_host/$repo/tags" |
+    curl -A "Mozilla/5.0" -sSL "https://$gitea_host/$repo/tags" |
         sed -n 's%.*/src/tag/\([^"]\+\)"[ >].*%\1%p'
 }
 
@@ -127,7 +127,7 @@ utils:gitea_releases() {
     local gitea_host="${2:-gitea.com}"
 
     # Get releases from Gitea web interface to avoid TOKEN requires
-    curl -A "Mozilla/5.0" -L "https://$gitea_host/$repo/tags" |
+    curl -A "Mozilla/5.0" -sSL "https://$gitea_host/$repo/tags" |
         sed -n 's%.*/releases/tag/\([^"]\+\)">.*%\1%p'
 }
 
