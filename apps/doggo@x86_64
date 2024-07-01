@@ -8,24 +8,50 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local package="${APP_NAME}_${version#v}_linux_amd64"
+    local package
+    local _bin_path
+
+    if utils:compare_versions "$version" ge 'v0.6.3'; then
+        package="${APP_NAME}_${version#v}_Linux_${APP_ARCH}"
+        _bin_path="$package"
+    else
+        package="${APP_NAME}_${version#v}_linux_amd64"
+        _bin_path=""
+    fi
 
     utils:get_file \
         "https://github.com/mr-karan/doggo/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
+    utils:get_file \
+        "https://github.com/mr-karan/doggo/archive/main.tar.gz" \
+        "$SDD_TEMP_DIR/main.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/main.tar.gz"
+
     app_remove
 
-    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+    install -vD -m755 "$SDD_TEMP_DIR/$_bin_path/$APP_NAME" \
+        "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    cd "$SDD_TEMP_DIR/$APP_NAME-main" || exit 1
+
+    # Install bash completion
+    if [ -f "completions/$APP_NAME.bash" ]; then
+        install -vD -m644 "completions/$APP_NAME.bash" \
+            "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    fi
 
     # Install zsh completion
-    install -vD -m644 "$SDD_TEMP_DIR/completions/$APP_NAME.zsh" \
-        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+    if [ -f "completions/$APP_NAME.zsh" ]; then
+        install -vD -m644 "completions/$APP_NAME.zsh" \
+            "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+    fi
 }
 
 app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
     rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
 }
 
