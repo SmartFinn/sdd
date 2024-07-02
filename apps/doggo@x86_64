@@ -24,28 +24,22 @@ app_install() {
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
-    utils:get_file \
-        "https://github.com/mr-karan/doggo/archive/main.tar.gz" \
-        "$SDD_TEMP_DIR/main.tar.gz"
-    utils:extract "$SDD_TEMP_DIR/main.tar.gz"
-
     app_remove
 
     install -vD -m755 "$SDD_TEMP_DIR/$_bin_path/$APP_NAME" \
         "$SDD_BIN_DIR/$APP_NAME" >&2
 
-    cd "$SDD_TEMP_DIR/$APP_NAME-main" || exit 1
+    # Generate shell completions
+    if utils:compare_versions "$version" ge 'v1.0.1'; then
+        # Install bash completion
+        mkdir -vp "$SDD_BASH_COMPLETION_DIR" >&2
+        "$SDD_BIN_DIR/$APP_NAME" completions bash > \
+            "$SDD_BASH_COMPLETION_DIR/$APP_NAME"
 
-    # Install bash completion
-    if [ -f "completions/$APP_NAME.bash" ]; then
-        install -vD -m644 "completions/$APP_NAME.bash" \
-            "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
-    fi
-
-    # Install zsh completion
-    if [ -f "completions/$APP_NAME.zsh" ]; then
-        install -vD -m644 "completions/$APP_NAME.zsh" \
-            "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+        # Install zsh completion
+        mkdir -vp "$SDD_ZSH_COMPLETION_DIR" >&2
+        "$SDD_BIN_DIR/$APP_NAME" completions zsh > \
+            "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME"
     fi
 }
 
