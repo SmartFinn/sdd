@@ -8,7 +8,7 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local package="$APP_NAME-$version-linux_arm64"
+    local package="$APP_NAME-${version#v}-linux_arm64"
 
     utils:get_file \
         "https://github.com/junegunn/fzf/releases/download/$version/$package.tar.gz" \
@@ -26,7 +26,7 @@ app_install() {
     install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
 
     # Install extras
-    cd "$SDD_TEMP_DIR/$APP_NAME-$version" || exit 1
+    cd "$SDD_TEMP_DIR/$APP_NAME-${version#v}" || exit 1
 
     install -vD -m755 "bin/$APP_NAME-tmux" "$SDD_BIN_DIR/$APP_NAME-tmux" >&2
 
