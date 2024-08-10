@@ -11,11 +11,11 @@ app_install() {
     local package="${APP_NAME}_linux_amd64"
 
     utils:get_file \
-        "https://github.com/MichaelMure/git-bug/releases/download/$version/$package" \
+        "https://github.com/git-bug/git-bug/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$APP_NAME"
 
     utils:get_file \
-        "https://github.com/MichaelMure/git-bug/archive/$version.tar.gz" \
+        "https://github.com/git-bug/git-bug/archive/$version.tar.gz" \
         "$SDD_TEMP_DIR/$version.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
 
@@ -44,7 +44,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'MichaelMure/git-bug'
+    utils:github_latest_release 'git-bug/git-bug'
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
