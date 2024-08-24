@@ -8,23 +8,37 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local package="${APP_NAME}_Linux_${APP_ARCH}"
+    local package="${APP_NAME}_${version#v}_Linux_${APP_ARCH}"
+
+    if utils:compare_versions "${version#v}" lt "2.0.0"; then
+        package="${APP_NAME}_Linux_${APP_ARCH}"
+    fi
 
     utils:get_file \
         "https://github.com/charmbracelet/glow/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
+    if utils:compare_versions "${version#v}" lt "2.0.0"; then
+        cd "$SDD_TEMP_DIR" || exit 1
+    else
+        cd "$SDD_TEMP_DIR/$package" || exit 1
+    fi
+
     app_remove
 
-    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+    install -vD -m755 "$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Install man page
+    install -vD -m644 "manpages/$APP_NAME.1.gz" \
+        "$SDD_MAN_DIR/man1/$APP_NAME.1.gz" >&2
 
     # Install bash completion
-    install -vD -m644 "$SDD_TEMP_DIR/completions/$APP_NAME.bash" \
+    install -vD -m644 "completions/$APP_NAME.bash" \
         "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
 
     # Install zsh completion
-    install -vD -m644 "$SDD_TEMP_DIR/completions/$APP_NAME.zsh" \
+    install -vD -m644 "completions/$APP_NAME.zsh" \
         "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
 }
 
@@ -32,6 +46,7 @@ app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
     rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
     rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$APP_NAME.1.gz"
 }
 
 app_version() {
