@@ -164,7 +164,17 @@ utils:get_file() {
     local url="${1?URL is missing}"
     local filepath="${2?File path is missing}"
 
-    LANG=C curl -L -o "$filepath" "$url"
+    echo "Dowloading ${url} to ${filepath} ..." >&2
+    LANG=C curl \
+        --fail \
+        --globoff \
+        --location \
+        --remote-name-all \
+        --remote-time \
+        --retry 3 \
+        --retry-max-time 10 \
+        --progress-bar \
+        --output "$filepath" "$url"
 }
 
 utils:extract() {
