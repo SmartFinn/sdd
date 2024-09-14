@@ -9,24 +9,32 @@ app_info() {
 app_install() {
     local version="${1:-$(app_version)}"
     local package="$APP_NAME-static-linux-$APP_ARCH"
+    local manpage_file
+
+    if utils:compare_versions "$version" ge 'v0.5.2'; then
+        manpage_file="${APP_ARCH}.1"
+    else
+        manpage_file="${APP_NAME}.1.gz"
+    fi
 
     utils:get_file \
         "https://github.com/doronbehar/pistol/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$APP_NAME"
 
     utils:get_file \
-        "https://github.com/doronbehar/pistol/releases/download/$version/$APP_NAME.1.gz" \
-        "$SDD_TEMP_DIR/$APP_NAME.1.gz"
+        "https://github.com/doronbehar/pistol/releases/download/$version/$manpage_file" \
+        "$SDD_TEMP_DIR/$manpage_file"
 
     app_remove
 
     install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
-    install -vD -m644 "$SDD_TEMP_DIR/$APP_NAME.1.gz" "$SDD_MAN_DIR/man1/$APP_NAME.1.gz" >&2
+    install -vD -m644 "$SDD_TEMP_DIR/$manpage_file" "$SDD_MAN_DIR/man1/$manpage_file" >&2
 }
 
 app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
     rm -vf "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$APP_NAME.1.gz" >&2
 }
 
 app_version() {
