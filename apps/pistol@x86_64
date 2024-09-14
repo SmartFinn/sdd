@@ -12,7 +12,7 @@ app_install() {
     local manpage_file
 
     if utils:compare_versions "$version" ge 'v0.5.2'; then
-        manpage_file="${APP_ARCH}.1"
+        manpage_file="${APP_NAME}.1"
     else
         manpage_file="${APP_NAME}.1.gz"
     fi
