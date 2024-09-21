@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "A monitor of resources"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-$APP_ARCH-linux-musl"
+
+    utils:get_file \
+        "https://github.com/aristocratos/btop/releases/download/$version/$package.tbz" \
+        "$SDD_TEMP_DIR/$package.tbz"
+    utils:extract "$SDD_TEMP_DIR/$package.tbz"
+    cd "$SDD_TEMP_DIR/$APP_NAME" || exit 1
+
+    app_remove
+
+    install -vD -m755 "bin/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Copy themes
+    mkdir -vp "${XDG_CONFIG_HOME:-$HOME/.config}/$APP_NAME/themes" >&2
+    cp -v themes/* "${XDG_CONFIG_HOME:-$HOME/.config}/$APP_NAME/themes" >&2
+
+    # Copy launcher
+    install -vD -m644 "$APP_NAME.desktop" \
+        "${XDG_HOME_DATA:-$HOME/.local/share}/applications/$APP_NAME.desktop"
+
+    # Copy icons
+    install -vD -m644 "Img/icon.png" \
+        "${XDG_HOME_DATA:-$HOME/.local/share}/icons/hicolor/48x48/apps/$APP_NAME.png" >&2
+    install -vD -m644 "Img/icon.svg" \
+        "${XDG_HOME_DATA:-$HOME/.local/share}/icons/hicolor/scalable/apps/$APP_NAME.svg" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "${XDG_HOME_DATA:-$HOME/.local/share}/applications/$APP_NAME.desktop" >&2
+    rm -vf "${XDG_HOME_DATA:-$HOME/.local/share}/icons/hicolor/48x48/apps/$APP_NAME.png" >&2
+    rm -vf "${XDG_HOME_DATA:-$HOME/.local/share}/icons/hicolor/scalable/apps/$APP_NAME.svg" >&2
+}
+
+app_version() {
+    utils:github_latest_tag 'aristocratos/btop'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
