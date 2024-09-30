@@ -14,15 +14,15 @@ app_install() {
     APP_NAME="tldr"
 
     utils:get_file \
-        "https://github.com/dbrgn/tealdeer/releases/download/$version/$package" \
+        "https://github.com/tealdeer-rs/tealdeer/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$APP_NAME"
 
     # Download completions
     utils:get_file \
-        "https://github.com/dbrgn/tealdeer/releases/download/$version/completions_bash" \
+        "https://github.com/tealdeer-rs/tealdeer/releases/download/$version/completions_bash" \
         "$SDD_TEMP_DIR/$APP_NAME.bash"
     utils:get_file \
-        "https://github.com/dbrgn/tealdeer/releases/download/$version/completions_zsh" \
+        "https://github.com/tealdeer-rs/tealdeer/releases/download/$version/completions_zsh" \
         "$SDD_TEMP_DIR/$APP_NAME.zsh"
 
     app_remove
@@ -46,7 +46,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'dbrgn/tealdeer'
+    utils:github_latest_release 'tealdeer-rs/tealdeer'
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
