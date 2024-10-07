@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+app_info() {
+    utils:info "Efficient Duplicate File Finder"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-${version#v}-linux-musl-$APP_ARCH"
+
+    utils:get_file \
+        "https://github.com/pkolaczk/fclones/releases/download/$version/$package.tar.gz" \
+        "$SDD_TEMP_DIR/$package.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
+
+    cd "$SDD_TEMP_DIR/target/$APP_ARCH-unknown-linux-musl/release" || exit 1
+
+    app_remove
+
+    install -vD -m755 "$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'pkolaczk/fclones'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
