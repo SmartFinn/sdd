@@ -18,19 +18,6 @@ declare -a _DISTROBOX_BINS=(
     distrobox-upgrade
 )
 
-declare -a _DISTROBOX_COMP=(
-    distrobox
-    distrobox-assemble
-    distrobox-create
-    distrobox-enter
-    distrobox-ephemeral
-    distrobox-generate-entry
-    distrobox-list
-    distrobox-rm
-    distrobox-stop
-    distrobox-upgrade
-)
-
 declare -a _DISTROBOX_MANS=(
     distrobox.1
     distrobox-assemble.1
@@ -72,9 +59,15 @@ app_install() {
     done
 
     # Install bash completions
-    for comp in "${_DISTROBOX_COMP[@]}"; do
-        [ -f "completions/$comp" ] || continue
-        install -vD -m644 "completions/$comp" "$SDD_BASH_COMPLETION_DIR/$comp" >&2
+    for bin in "${_DISTROBOX_BINS[@]}"; do
+        [ -f "completions/bash/$bin" ] || continue
+        install -vD -m644 "completions/bash/$bin" "$SDD_BASH_COMPLETION_DIR/$bin" >&2
+    done
+
+    # Install zsh completions
+    for bin in "${_DISTROBOX_BINS[@]}"; do
+        [ -f "completions/zsh/_$bin" ] || continue
+        install -vD -m644 "completions/zsh/_$bin" "$SDD_ZSH_COMPLETION_DIR/_$bin" >&2
     done
 
     # Install man pages
@@ -91,8 +84,13 @@ app_remove() {
     done
 
     # Remove bash completions
-    for comp in "${_DISTROBOX_COMP[@]}"; do
-        rm -vf "$SDD_BASH_COMPLETION_DIR/$comp" >&2
+    for bin in "${_DISTROBOX_BINS[@]}"; do
+        rm -vf "$SDD_BASH_COMPLETION_DIR/$bin" >&2
+    done
+
+    # Remove zsh completions
+    for bin in "${_DISTROBOX_BINS[@]}"; do
+        rm -vf "$SDD_ZSH_COMPLETION_DIR/_$bin" >&2
     done
 
     # Remove man pages
