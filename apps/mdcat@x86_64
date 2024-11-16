@@ -10,6 +10,11 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="$APP_NAME-$version-$APP_ARCH-unknown-linux-musl"
 
+    # Set the package name for specific version
+    if utils:compare_versions "$version" ge "2.6.1"; then
+        package="$APP_NAME-$version-$APP_ARCH-unknown-linux-gnu"
+    fi
+
     utils:get_file \
         "https://github.com/swsnr/mdcat/releases/download/$APP_NAME-$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
@@ -18,10 +23,31 @@ app_install() {
     app_remove
 
     install -vD -m755 "$SDD_TEMP_DIR/$package/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+
+    # Install man page
+    if [ -f "$SDD_TEMP_DIR/$package/$APP_NAME.1" ]; then
+        install -vD -m644 "$SDD_TEMP_DIR/$package/$APP_NAME.1" \
+            "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+    elif [ -f "$SDD_TEMP_DIR/$package/$APP_NAME.1/$APP_NAME.1" ]; then
+        install -vD -m644 "$SDD_TEMP_DIR/$package/$APP_NAME.1/$APP_NAME.1" \
+            "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+    fi
+
+    # Generate shell completions
+    mkdir -vp "$SDD_BASH_COMPLETION_DIR" >&2
+    "$SDD_BIN_DIR/$APP_NAME" --completions bash > \
+        "$SDD_BASH_COMPLETION_DIR/$APP_NAME"
+
+    mkdir -vp "$SDD_ZSH_COMPLETION_DIR" >&2
+    "$SDD_BIN_DIR/$APP_NAME" --completions zsh > \
+        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME"
 }
 
 app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
 }
 
 app_version() {
