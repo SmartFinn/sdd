@@ -26,7 +26,7 @@ utils:github_latest_release() {
     local repo="${1?}"
 
     # Get tag name from URL redirection to avoid GitHub API limits
-    awk -F'[ /]' -v e=1 '/< location:/ {e=0; gsub(/\r/, "", $NF); print $NF;} END {exit(e);}' < <(
+    awk -F'[ /]' -v e=1 '/< [Ll]ocation:/ {e=0; gsub(/\r/, "", $NF); print $NF;} END {exit(e);}' < <(
         LANG=C curl -A "Mozilla/5.0" --verbose \
             "https://github.com/$repo/releases/latest" 2>&1
     )
@@ -107,7 +107,7 @@ utils:gitea_latest_release() {
     local gitea_host="${2:-gitea.com}"
 
     # Get tag name from URL redirection to avoid TOKEN requires
-    awk -F'[ /]' -v e=1 '/< location:/ {e=0; gsub(/\r/, "", $NF); print $NF;} END {exit(e);}' < <(
+    awk -F'[ /]' -v e=1 '/< [Ll]ocation:/ {e=0; gsub(/\r/, "", $NF); print $NF;} END {exit(e);}' < <(
         LANG=C curl -A "Mozilla/5.0" --verbose \
             "https://$gitea_host/$repo/releases/latest" 2>&1
     )
