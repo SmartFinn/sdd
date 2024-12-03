@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+BIN_NAME="tldr"
+
+app_info() {
+    utils:info "A tldr client written in Rust"
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="$APP_NAME-$version-$APP_ARCH-unknown-linux-musl"
+
+    utils:get_file \
+        "https://github.com/tldr-pages/tlrc/releases/download/$version/$package.tar.gz" \
+        "$SDD_TEMP_DIR/$package.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
+
+    app_remove
+
+    # Install binary
+    install -vD -m755 "$SDD_TEMP_DIR/$BIN_NAME" "$SDD_BIN_DIR/$BIN_NAME" >&2
+
+    # Install extras
+    install -vD -m644 "$SDD_TEMP_DIR/completions/$BIN_NAME.bash" \
+        "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+
+    install -vD -m644 "$SDD_TEMP_DIR/completions/_$BIN_NAME" \
+        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+
+    # Install a man page
+    install -vD -m644 "$SDD_TEMP_DIR/$BIN_NAME.1" \
+        "$SDD_MAN_DIR/man1/$BIN_NAME.1" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$BIN_NAME" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/$BIN_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_$BIN_NAME" >&2
+    rm -vf "$SDD_MAN_DIR/man1/$BIN_NAME.1" >&2
+}
+
+app_version() {
+    utils:github_latest_release 'tldr-pages/tlrc'
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
