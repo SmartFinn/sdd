@@ -20,20 +20,28 @@ app_install() {
     app_remove
 
     install -vD -m755 "$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+    install -vD -m755 "ya" "$SDD_BIN_DIR/ya" >&2
 
     # Install bash completion
     install -vD -m644 "completions/$APP_NAME.bash" \
         "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    install -vD -m644 "completions/ya.bash" \
+        "$SDD_BASH_COMPLETION_DIR/ya" >&2
 
     # Install zsh completion
     install -vD -m644 "completions/_$APP_NAME" \
         "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+    install -vD -m644 "completions/_ya" \
+        "$SDD_ZSH_COMPLETION_DIR/_ya" >&2
 }
 
 app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_BIN_DIR/ya" >&2
     rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+    rm -vf "$SDD_BASH_COMPLETION_DIR/ya" >&2
     rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+    rm -vf "$SDD_ZSH_COMPLETION_DIR/_ya" >&2
 }
 
 app_version() {
