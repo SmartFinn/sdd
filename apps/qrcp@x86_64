@@ -8,7 +8,7 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local package="${APP_NAME}_${version}_linux_amd64.tar.gz"
+    local package="${APP_NAME}_${version#v}_linux_amd64.tar.gz"
 
     if utils:compare_versions "$version" le "0.10.1"; then
         package="${APP_NAME}_${version}_linux_${APP_ARCH}.tar.gz"
