@@ -16,7 +16,7 @@ app_install() {
     fi
 
     utils:get_file \
-        "https://github.com/extrawurst/gitui/releases/download/$version/$package.tar.gz" \
+        "https://github.com/gitui-org/gitui/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -30,7 +30,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'extrawurst/gitui'
+    utils:github_latest_release 'gitui-org/gitui'
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
