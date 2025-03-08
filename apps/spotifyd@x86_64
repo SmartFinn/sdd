@@ -8,8 +8,12 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
+    local package="$APP_NAME-linux-$APP_ARCH-full"
 
-    local package="$APP_NAME-linux-full"
+    # Set the package name for specific version
+    if utils:compare_versions "${version#v}" lt "0.4.0"; then
+		package="$APP_NAME-linux-full"
+    fi
 
     utils:get_file \
         "https://github.com/Spotifyd/spotifyd/releases/download/$version/$package.tar.gz" \
