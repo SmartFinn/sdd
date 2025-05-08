@@ -18,6 +18,25 @@ declare -a _DISTROBOX_BINS=(
     distrobox-upgrade
 )
 
+declare -a _DISTROBOX_ZSH_COMPLETIONS=(
+    _distrobox
+    _distrobox-assemble
+    _distrobox-create
+    _distrobox-enter
+    _distrobox-ephemeral
+    _distrobox-export
+    _distrobox-generate-entry
+    _distrobox-host-exec
+    _distrobox-init
+    _distrobox-list
+    _distrobox-rm
+    _distrobox-stop
+    _distrobox-upgrade
+    _distrobox_containers
+    _distrobox_images
+    _distrobox_running_containers
+)
+
 declare -a _DISTROBOX_MANS=(
     distrobox.1
     distrobox-assemble.1
@@ -65,9 +84,9 @@ app_install() {
     done
 
     # Install zsh completions
-    for bin in "${_DISTROBOX_BINS[@]}"; do
-        [ -f "completions/zsh/_$bin" ] || continue
-        install -vD -m644 "completions/zsh/_$bin" "$SDD_ZSH_COMPLETION_DIR/_$bin" >&2
+    for comp in "${_DISTROBOX_ZSH_COMPLETIONS[@]}"; do
+        [ -f "completions/zsh/$comp" ] || continue
+        install -vD -m644 "completions/zsh/$comp" "$SDD_ZSH_COMPLETION_DIR/$comp" >&2
     done
 
     # Install man pages
