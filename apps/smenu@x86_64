@@ -11,14 +11,14 @@ app_install() {
     local package
 
     case "${version#v}" in
-        1.4.*)
-            package="$APP_NAME-${version#v}-linux-musl-${APP_ARCH}-static.bz2"
+        0.9.*|1.0.*|1.1.*|1.2.*)
+            package="$APP_NAME-${version#v}-linux-musl-$APP_ARCH-static.xz"
             ;;
         1.3.0)
             package="$APP_NAME-${version#v}-linux-musl-${APP_ARCH/x/s}-static.xz"
             ;;
         *)
-            package="$APP_NAME-${version#v}-linux-musl-$APP_ARCH-static.xz"
+            package="$APP_NAME-${version#v}-linux-musl-${APP_ARCH}-static.bz2"
             ;;
     esac
 
