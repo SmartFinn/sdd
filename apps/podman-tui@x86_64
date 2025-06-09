@@ -17,7 +17,14 @@ app_install() {
 
     app_remove
 
-    cd "$SDD_TEMP_DIR/$package/$APP_NAME-${version#v}" || exit 1
+    if [ -d "$SDD_TEMP_DIR/$package/$APP_NAME-${version#v}" ]; then
+        cd "$SDD_TEMP_DIR/$package/$APP_NAME-${version#v}"
+    elif [ -d "$SDD_TEMP_DIR/$package/$APP_NAME" ]; then
+        cd "$SDD_TEMP_DIR/$package/$APP_NAME"
+    else
+        exit 1
+    fi
+
 
     install -vD -m755 "$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
 }
