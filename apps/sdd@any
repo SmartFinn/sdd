@@ -52,7 +52,6 @@ app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
     rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
     rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
-    rm -vf "${XDG_CONFIG_HOME:-$HOME/.config}/environment.d/90_sdd_bin_path.conf" >&2
     rm -vrf "$SDD_DATA_DIR/apps" >&2
 }
 
