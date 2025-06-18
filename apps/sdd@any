@@ -36,7 +36,7 @@ app_install() {
 
     # Add $SDD_BIN_DIR to $PATH environment variable if needed
     if ! [[ $PATH =~ :?$SDD_BIN_DIR/?:? ]]; then
-        tee -a "${XDG_CONFIG_HOME:$HOME/.config}/environment.d/90_sdd_bin_path.conf" <<USER_ENV
+        tee -a "${XDG_CONFIG_HOME:-$HOME/.config}/environment.d/90_sdd_bin_path.conf" <<USER_ENV
 # Add \$SDD_BIN_DIR to \$PATH
 PATH="$SDD_BIN_DIR:\$PATH"
 USER_ENV
@@ -52,6 +52,7 @@ app_remove() {
     rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
     rm -vf "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
     rm -vf "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+    rm -vf "${XDG_CONFIG_HOME:-$HOME/.config}/environment.d/90_sdd_bin_path.conf" >&2
     rm -vrf "$SDD_DATA_DIR/apps" >&2
 }
 
