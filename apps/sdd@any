@@ -34,13 +34,12 @@ app_install() {
     mkdir -vp "$SDD_DATA_DIR/apps" >&2
     cp -v apps/* "$SDD_DATA_DIR/apps" >&2
 
-    # Append user's profile if $SDD_BIN_DIR isn't in $PATH
+    # Add $SDD_BIN_DIR to $PATH environment variable if needed
     if ! [[ $PATH =~ :?$SDD_BIN_DIR/?:? ]]; then
-        tee -a "$HOME/.profile" <<APPEND_PROFILE
-
-# add SDD_BIN_DIR to PATH
-[ -d "$SDD_BIN_DIR" ] && PATH="$SDD_BIN_DIR:\$PATH"
-APPEND_PROFILE
+        tee -a "${XDG_CONFIG_HOME:$HOME/.config}/environment.d/90_sdd_bin_path.conf" <<USER_ENV
+# Add \$SDD_BIN_DIR to \$PATH
+PATH="$SDD_BIN_DIR:\$PATH"
+USER_ENV
 
         cat <<POST_INSTALL_MSG
 $APP_NAME: \$SDD_BIN_DIR will be added in your PATH on the next login.
