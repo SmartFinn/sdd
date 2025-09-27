@@ -19,20 +19,26 @@ app_install() {
 
     app_remove
 
-    install -vD -m755 "$APP_ARCH-linux/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+    if utils:compare_versions "${version#v}" lt "1.50.0"; then
+        install -vD -m755 "$APP_ARCH-linux/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+    else
+        install -vD -m755 "$APP_ARCH-unknown-linux-musl/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+    fi
 
     # Install man page
     install -vD -m644 "$APP_NAME.1" "$SDD_MAN_DIR/man1/$APP_NAME.1" >&2
 
-    # Install bash completions
-    install -vD -m644 "completion/$APP_NAME.bash" \
-        "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
-    install -vD -m644 "completion/br.bash" "$SDD_BASH_COMPLETION_DIR/br" >&2
+    if utils:compare_versions "${version#v}" lt "1.50.0"; then
+        # Install bash completions
+        install -vD -m644 "completion/$APP_NAME.bash" \
+            "$SDD_BASH_COMPLETION_DIR/$APP_NAME" >&2
+        install -vD -m644 "completion/br.bash" "$SDD_BASH_COMPLETION_DIR/br" >&2
 
-    # Install zsh completions
-    install -vD -m644 "completion/_$APP_NAME" \
-        "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
-    install -vD -m644 "completion/_br" "$SDD_ZSH_COMPLETION_DIR/_br" >&2
+        # Install zsh completions
+        install -vD -m644 "completion/_$APP_NAME" \
+            "$SDD_ZSH_COMPLETION_DIR/_$APP_NAME" >&2
+        install -vD -m644 "completion/_br" "$SDD_ZSH_COMPLETION_DIR/_br" >&2
+    fi
 }
 
 app_remove() {
