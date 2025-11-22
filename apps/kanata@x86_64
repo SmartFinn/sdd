@@ -8,14 +8,28 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
+    local package
+
+    # Set the package name for specific version
+    if utils:compare_versions_alt "$version" le "v1.9.0"; then
+        package="${APP_NAME}"
+    else
+        package="linux-binaries-x64-${version}.zip"
+    fi
 
     utils:get_file \
-        "https://github.com/jtroo/kanata/releases/download/$version/$APP_NAME" \
-        "$SDD_TEMP_DIR/$APP_NAME"
+        "https://github.com/jtroo/kanata/releases/download/$version/$package" \
+        "$SDD_TEMP_DIR/$package"
 
     app_remove
 
-    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+    # Run install instruction for specific version
+    if utils:compare_versions_alt "$version" le "v1.9.0"; then
+        install -vD -m755 "$SDD_TEMP_DIR/$package" "$SDD_BIN_DIR/$APP_NAME" >&2
+    else
+        utils:extract "$SDD_TEMP_DIR/$package"
+        install -vD -m755 "$SDD_TEMP_DIR/kanata_linux_cmd_allowed_x64" "$SDD_BIN_DIR/$APP_NAME" >&2
+    fi
 }
 
 app_remove() {
