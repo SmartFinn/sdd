@@ -205,26 +205,19 @@ utils:compare_versions() {
     local ver_left="${1?}"
     local operator="${2?}"
     local ver_right="${3?}"
+    local sorted lowest highest
+
+    mapfile -t sorted < <(printf '%s\n%s' "$ver_left" "$ver_right" | sort -V)
+    lowest="${sorted[0]}"
+    highest="${sorted[1]}"
 
     case "$operator" in
-    lt)
-        [[ "$ver_left" < "$ver_right" ]]
-        ;;
-    gt)
-        [[ "$ver_left" > "$ver_right" ]]
-        ;;
-    eq)
-        [[ "$ver_left" == "$ver_right" ]]
-        ;;
-    ne)
-        [[ "$ver_left" != "$ver_right" ]]
-        ;;
-    le)
-        [[ "$ver_left" < "$ver_right" ]] || [[ "$ver_left" == "$ver_right" ]]
-        ;;
-    ge)
-        [[ "$ver_left" > "$ver_right" ]] || [[ "$ver_left" == "$ver_right" ]]
-        ;;
+    lt) [[ "$ver_left" == "$lowest" && "$ver_left" != "$ver_right" ]] ;;
+    gt) [[ "$ver_left" == "$highest" && "$ver_left" != "$ver_right" ]] ;;
+    eq) [[ "$ver_left" == "$ver_right" ]] ;;
+    ne) [[ "$ver_left" != "$ver_right" ]] ;;
+    le) [[ "$ver_left" == "$lowest" ]] ;;
+    ge) [[ "$ver_left" == "$highest" ]] ;;
     *)
         echo "usage: ${FUNCNAME[0]} ver1 lt|le|gt|ge|eq|ne ver2" >&2
         exit 1
