@@ -8,7 +8,14 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local package="${APP_NAME}-linux-x64.zip"
+    local package
+
+    # Set the package name for specific version
+    if utils:compare_versions "$version" le "v1.0.92"; then
+        package="${APP_NAME}-linux-x64.zip"
+    else
+        package="${APP_NAME}-linux-x64.tar.gz"
+    fi
 
     utils:get_file \
         "https://github.com/sst/opencode/releases/download/$version/$package" \
