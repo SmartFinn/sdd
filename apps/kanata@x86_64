@@ -11,8 +11,10 @@ app_install() {
     local package
 
     # Set the package name for specific version
-    if utils:compare_versions_alt "$version" le "v1.9.0"; then
+    if utils:compare_versions "$version" le "v1.9.0"; then
         package="${APP_NAME}"
+    elif utils:compare_versions "$version" ge "v1.10.1"; then
+        package="${APP_NAME}-linux-binaries-${version}-x64.zip"
     else
         package="linux-binaries-x64-${version}.zip"
     fi
