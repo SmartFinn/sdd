@@ -8,7 +8,13 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local package="$APP_NAME-$APP_ARCH-linux-musl"
+    local package
+
+    if utils:compare_versions "$version" ge "v1.4.6"; then
+        package="$APP_NAME-$APP_ARCH-unknown-linux-musl"
+    else
+        package="$APP_NAME-$APP_ARCH-linux-musl"
+    fi
 
     utils:get_file \
         "https://github.com/aristocratos/btop/releases/download/$version/$package.tbz" \
