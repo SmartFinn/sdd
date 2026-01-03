@@ -18,7 +18,7 @@ app_install() {
     fi
 
     utils:get_file \
-        "https://github.com/sst/opencode/releases/download/$version/$package" \
+        "https://github.com/anomalyco/opencode/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$package"
     utils:extract "$SDD_TEMP_DIR/$package"
 
@@ -32,7 +32,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'sst/opencode'
+    utils:github_latest_release 'anomalyco/opencode'
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
