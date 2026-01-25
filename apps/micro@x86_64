@@ -11,7 +11,7 @@ app_install() {
     local package="$APP_NAME-${version#v}-linux64"
 
     utils:get_file \
-        "https://github.com/zyedidia/micro/releases/download/$version/$package.tar.gz" \
+        "https://github.com/micro-editor/micro/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -27,7 +27,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'zyedidia/micro'
+    utils:github_latest_release 'micro-editor/micro'
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
