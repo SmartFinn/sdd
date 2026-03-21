@@ -8,14 +8,24 @@ app_info() {
 
 app_install() {
     local version="${1:-$(app_version)}"
-    local package="${APP_NAME}_linux_amd64"
+    local package="${APP_NAME}_${version#v}_linux_amd64"
+
+    # Set the package name for specific version
+    if utils:compare_versions "$version" lt "v0.6.0"; then
+        # don't include version into package name
+        package="${APP_NAME}_linux_amd64"
+    fi
 
     utils:get_file \
         "https://github.com/peco/peco/releases/download/$version/$package".tar.gz \
         "$SDD_TEMP_DIR/$package".tar.gz
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
-    cd "$SDD_TEMP_DIR/$package" || exit 1
+    if utils:compare_versions "$version" lt "v0.6.0"; then
+        cd "$SDD_TEMP_DIR/$package" || exit 1
+    else
+        cd "$SDD_TEMP_DIR" || exit 1
+    fi
 
     app_remove
 
