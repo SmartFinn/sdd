@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/syncthing/syncthing"
+APP_DESC="Open Source Continuous File Synchronization"
+
 app_info() {
-    utils:info "Open Source Continuous File Synchronization"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-linux-amd64-$version"
 
     utils:get_file \
-        "https://github.com/syncthing/syncthing/releases/download/$version/$package.tar.gz" \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -46,7 +49,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'syncthing/syncthing'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

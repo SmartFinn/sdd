@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/koalaman/shellcheck"
+APP_DESC="A static analysis tool for shell scripts"
+
 app_info() {
-    utils:info "A static analysis tool for shell scripts"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-$version.linux.$APP_ARCH.tar.xz"
 
     utils:get_file \
-        "https://github.com/koalaman/shellcheck/releases/download/$version/$package" \
+        "$APP_URL/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$package"
     utils:extract "$SDD_TEMP_DIR/$package"
 
@@ -41,7 +44,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'koalaman/shellcheck'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

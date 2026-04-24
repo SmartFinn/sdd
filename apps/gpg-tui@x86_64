@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/orhun/gpg-tui"
+APP_DESC="Manage your GnuPG keys with ease!"
+
 app_info() {
-    utils:info "Manage your GnuPG keys with ease!"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="${APP_NAME}-${version#v}-${APP_ARCH}-unknown-linux-gnu"
 
     utils:get_file \
-        "https://github.com/orhun/gpg-tui/releases/download/$version/$package.tar.gz" \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -41,7 +44,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'orhun/gpg-tui'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

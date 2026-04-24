@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/casey/just"
+APP_DESC="Just a command runner"
+
 app_info() {
-    utils:info "Just a command runner"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-$version-$APP_ARCH-unknown-linux-musl"
 
     utils:get_file \
-        "https://github.com/casey/just/releases/download/$version/$package.tar.gz" \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
 
@@ -26,7 +29,7 @@ app_install() {
     # Install extras
     if utils:compare_versions "$version" lt "1.23.0"; then
         utils:get_file \
-            "https://github.com/casey/just/archive/$version.tar.gz" \
+            "$APP_URL/archive/$version.tar.gz" \
             "$SDD_TEMP_DIR/$version.tar.gz"
         utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
 
@@ -50,7 +53,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'casey/just'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

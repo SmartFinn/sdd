@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/newren/git-filter-repo"
+APP_DESC="Multitree-based personal task manager"
+
 app_info() {
-    utils:info "Multitree-based personal task manager"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="${APP_NAME}-${version#v}"
 
     utils:get_file \
-        "https://github.com/newren/git-filter-repo/releases/download/$version/$package.tar.xz" \
+        "$APP_URL/releases/download/$version/$package.tar.xz" \
         "$SDD_TEMP_DIR/$package.tar.xz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.xz
 
@@ -27,7 +30,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'newren/git-filter-repo'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

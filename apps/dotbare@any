@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/kazhala/dotbare"
+APP_DESC="Manage your dotfiles interactively with fzf"
+
 app_info() {
-    utils:info "Manage your dotfiles interactively with fzf"
+    utils:info
 }
 
 app_install() {
@@ -12,7 +15,7 @@ app_install() {
     local install_dir="${XDG_DATA_HOME:-$HOME/.local/share}/$APP_NAME"
 
     utils:get_file \
-        "https://github.com/kazhala/dotbare/archive/$version.tar.gz" \
+        "$APP_URL/archive/$version.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -57,7 +60,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_tag 'kazhala/dotbare'
+    utils:github_latest_tag "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

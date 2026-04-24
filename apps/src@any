@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://gitlab.com/esr/src"
+APP_DESC="Simple Revision Control is RCS reloaded with a modern UI"
+
 app_info() {
-    utils:info "Simple Revision Control is RCS reloaded with a modern UI"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-$version"
 
     utils:get_file \
-        "https://gitlab.com/esr/src/-/archive/${version}/$package.tar.gz" \
+        "$APP_URL/-/archive/${version}/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -34,7 +37,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:gitlab_latest_tag 'esr/src'
+    utils:gitlab_latest_tag "${APP_URL#https://gitlab.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

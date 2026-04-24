@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/PaulJuliusMartinez/jless"
+APP_DESC="a command-line JSON viewer"
+
 app_info() {
-    utils:info "a command-line JSON viewer"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="${APP_NAME}-${version}-${APP_ARCH}-unknown-linux-gnu"
 
     utils:get_file \
-        "https://github.com/PaulJuliusMartinez/jless/releases/download/$version/$package.zip" \
+        "$APP_URL/releases/download/$version/$package.zip" \
         "$SDD_TEMP_DIR/$package.zip"
     utils:extract "$SDD_TEMP_DIR/$package".zip
 
@@ -25,7 +28,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'PaulJuliusMartinez/jless'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

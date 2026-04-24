@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/KSXGitHub/parallel-disk-usage"
+APP_DESC="Parallel Disk Usage. Blazing fast directory tree analyzer"
+
 app_info() {
-    utils:info "Parallel Disk Usage. Blazing fast directory tree analyzer"
+    utils:info
 }
 
 app_install() {
@@ -11,17 +14,17 @@ app_install() {
     local package="$APP_NAME-$APP_ARCH-unknown-linux-gnu"
 
     utils:get_file \
-        "https://github.com/KSXGitHub/parallel-disk-usage/releases/download/$version/$package" \
+        "$APP_URL/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$APP_NAME"
 
     utils:get_file \
-        "https://github.com/KSXGitHub/parallel-disk-usage/releases/download/$version/completion.bash" \
+        "$APP_URL/releases/download/$version/completion.bash" \
         "$SDD_TEMP_DIR/$APP_NAME.bash"
 
     utils:get_file \
-        "https://github.com/KSXGitHub/parallel-disk-usage/releases/download/$version/completion.zsh" \
+        "$APP_URL/releases/download/$version/completion.zsh" \
         "$SDD_TEMP_DIR/$APP_NAME.zsh"
-
+    
     app_remove
 
     install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
@@ -42,7 +45,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'KSXGitHub/parallel-disk-usage'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

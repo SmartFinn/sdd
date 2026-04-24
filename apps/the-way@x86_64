@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/out-of-cheese-error/the-way"
+APP_DESC="A code snippets manager for your terminal"
+
 app_info() {
-    utils:info "A code snippets manager for your terminal"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-linux"
 
     utils:get_file \
-        "https://github.com/out-of-cheese-error/the-way/releases/download/$version/$package.tar.gz" \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
 
@@ -36,7 +39,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'out-of-cheese-error/the-way'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

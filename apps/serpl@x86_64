@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/yassinebridi/serpl"
+APP_DESC="A simple terminal UI for search and replace, ala VS Code"
+
 app_info() {
-    utils:info "A simple terminal UI for search and replace, ala VS Code"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-$version-linux-$APP_ARCH"
 
     utils:get_file \
-        "https://github.com/yassinebridi/serpl/releases/download/$version/$package.tar.gz" \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -25,7 +28,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'yassinebridi/serpl'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

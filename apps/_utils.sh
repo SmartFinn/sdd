@@ -153,11 +153,16 @@ utils:parser() {
 }
 
 utils:info() {
-    local app_desc="${1:-}"
     local cols="${COLUMNS:-$(tput cols)}"
 
-    printf '%-16s %-10s %s\n' "$APP_NAME" "$APP_ARCH" "$app_desc" |
-        cut -c 1-"${cols:-80}"
+    if [ -t 1 ]; then
+        printf '\e]8;;%s\e\\%-16s\e]8;;\e\\ %-10s %s\n' \
+            "$APP_URL" "$APP_NAME" "$APP_ARCH" "$APP_DESC" |
+            cut -c 1-"${cols:-80}"
+    else
+        printf '%-16s %-10s %s\n' "$APP_NAME" "$APP_ARCH" "$APP_DESC" |
+            cut -c 1-"${cols:-80}"
+    fi
 }
 
 utils:get_file() {

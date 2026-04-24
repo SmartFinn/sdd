@@ -2,17 +2,20 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/so-fancy/diff-so-fancy"
+APP_DESC="Make your diffs human readable instead of machine readable"
+
 app_info() {
-    utils:info "Make your diffs human readable instead of machine readable"
+    utils:info
 }
 
 app_install() {
     local version="${1:-$(app_version)}"
 
     utils:get_file \
-        "https://github.com/so-fancy/diff-so-fancy/releases/download/$version/diff-so-fancy" \
+        "$APP_URL/releases/download/$version/diff-so-fancy" \
         "$SDD_TEMP_DIR/$APP_NAME"
-
+    
     app_remove
 
     install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
@@ -23,7 +26,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'so-fancy/diff-so-fancy'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/thameera/vimv"
+APP_DESC="Batch-rename files using Vim"
+
 app_info() {
-    utils:info "Batch-rename files using Vim"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-master"
 
     utils:get_file \
-        "https://github.com/thameera/vimv/archive/master.tar.gz" \
+        "$APP_URL/archive/master.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -27,7 +30,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_commit_hash 'thameera/vimv'
+    utils:github_latest_commit_hash "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

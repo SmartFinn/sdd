@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/eth-p/bat-extras"
+APP_DESC="Bash scripts that integrate bat with various command line tools"
+
 declare -a _BAT_EXTRAS_BINS=(
     batdiff
     batgrep
@@ -12,7 +15,7 @@ declare -a _BAT_EXTRAS_BINS=(
 )
 
 app_info() {
-    utils:info "Bash scripts that integrate bat with various command line tools"
+    utils:info
 }
 
 app_install() {
@@ -30,7 +33,7 @@ app_install() {
     fi
 
     utils:get_file \
-        "https://github.com/eth-p/bat-extras/releases/download/$version/$package.zip" \
+        "$APP_URL/releases/download/$version/$package.zip" \
         "$SDD_TEMP_DIR/$package.zip"
     utils:extract "$SDD_TEMP_DIR/$package".zip
 
@@ -60,7 +63,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'eth-p/bat-extras'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

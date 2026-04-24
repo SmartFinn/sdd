@@ -2,17 +2,20 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/chmln/handlr"
+APP_DESC="A better xdg-utils"
+
 app_info() {
-    utils:info "A better xdg-utils"
+    utils:info
 }
 
 app_install() {
     local version="${1:-$(app_version)}"
 
     utils:get_file \
-        "https://github.com/chmln/handlr/releases/download/$version/$APP_NAME" \
+        "$APP_URL/releases/download/$version/$APP_NAME" \
         "$SDD_TEMP_DIR/$APP_NAME"
-
+    
     app_remove
 
     install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
@@ -23,7 +26,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'chmln/handlr'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

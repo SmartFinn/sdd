@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/imsnif/bandwhich"
+APP_DESC="Terminal bandwidth utilization tool"
+
 app_info() {
-    utils:info "Terminal bandwidth utilization tool"
+    utils:info
 }
 
 app_install() {
@@ -18,13 +21,13 @@ app_install() {
     esac
 
     utils:get_file \
-        "https://github.com/imsnif/bandwhich/releases/download/$version/$package".tar.gz \
+        "$APP_URL/releases/download/$version/$package".tar.gz \
         "$SDD_TEMP_DIR/$package".tar.gz
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
     if utils:compare_versions "${version#v}" lt "0.22.0"; then
         utils:get_file \
-            "https://github.com/imsnif/bandwhich/archive/$version.tar.gz" \
+            "$APP_URL/archive/$version.tar.gz" \
             "$SDD_TEMP_DIR/$version.tar.gz"
         utils:extract "$SDD_TEMP_DIR/$version".tar.gz
 
@@ -58,7 +61,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'imsnif/bandwhich'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

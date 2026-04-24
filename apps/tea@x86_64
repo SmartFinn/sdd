@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://gitea.com/gitea/tea"
+APP_DESC="A command line tool to interact with Gitea servers"
+
 app_info() {
-    utils:info "A command line tool to interact with Gitea servers"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="${APP_NAME}-${version#[vV]}-linux-amd64"
 
     utils:get_file \
-        "https://gitea.com/gitea/tea/releases/download/$version/$package.xz" \
+        "$APP_URL/releases/download/$version/$package.xz" \
         "$SDD_TEMP_DIR/$APP_NAME.xz"
     utils:extract "$SDD_TEMP_DIR/$APP_NAME".xz
 
@@ -46,7 +49,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:gitea_latest_release 'gitea/tea'
+    utils:gitea_latest_release "${APP_URL#https://gitea.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/noborus/ov"
+APP_DESC="Feature-rich terminal pager"
+
 app_info() {
-    utils:info "Feature-rich terminal pager"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="${APP_NAME}_${version#v}_linux_amd64.zip"
 
     utils:get_file \
-        "https://github.com/noborus/ov/releases/download/$version/$package" \
+        "$APP_URL/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$package"
     utils:extract "$SDD_TEMP_DIR/$package"
 
@@ -36,7 +39,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'noborus/ov'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

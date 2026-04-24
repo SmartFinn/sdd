@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/foriequal0/git-trim"
+APP_DESC="Automatically trims your branches whose tracking remote refs are merged or stray"
+
 app_info() {
-    utils:info "Automatically trims your branches whose tracking remote refs are merged or stray"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-linux-$version"
 
     utils:get_file \
-        "https://github.com/foriequal0/git-trim/releases/download/$version/$package.tgz" \
+        "$APP_URL/releases/download/$version/$package.tgz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -26,7 +29,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'foriequal0/git-trim'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

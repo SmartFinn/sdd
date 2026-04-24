@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/knqyf263/pet"
+APP_DESC="Simple command-line snippet manager, written in Go"
+
 app_info() {
-    utils:info "Simple command-line snippet manager, written in Go"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="${APP_NAME}_${version#v}_linux_amd64.tar.gz"
 
     utils:get_file \
-        "https://github.com/knqyf263/pet/releases/download/$version/$package" \
+        "$APP_URL/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$package"
     utils:extract "$SDD_TEMP_DIR/$package"
 
@@ -30,7 +33,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'knqyf263/pet'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

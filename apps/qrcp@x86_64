@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/claudiodangelis/qrcp"
+APP_DESC="Transfer files over wifi by scanning a QR code without leaving the terminal"
+
 app_info() {
-    utils:info "Transfer files over wifi by scanning a QR code without leaving the terminal"
+    utils:info
 }
 
 app_install() {
@@ -15,7 +18,7 @@ app_install() {
     fi
 
     utils:get_file \
-        "https://github.com/claudiodangelis/qrcp/releases/download/$version/$package" \
+        "$APP_URL/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$package"
     utils:extract "$SDD_TEMP_DIR/$package"
 
@@ -40,7 +43,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'claudiodangelis/qrcp'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/natesales/q"
+APP_DESC="A tiny command line DNS client with support for UDP, DoT, DoH, and DoQ"
+
 app_info() {
-    utils:info "A tiny command line DNS client with support for UDP, DoT, DoH, and DoQ"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="${APP_NAME}_${version#v}_linux_amd64"
 
     utils:get_file \
-        "https://github.com/natesales/q/releases/download/$version/$package.tar.gz" \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -25,7 +28,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'natesales/q'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

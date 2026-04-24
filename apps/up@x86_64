@@ -2,17 +2,20 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/akavel/up"
+APP_DESC="Ultimate Plumber is a tool for writing Linux pipes with instant live preview"
+
 app_info() {
-    utils:info "Ultimate Plumber is a tool for writing Linux pipes with instant live preview"
+    utils:info
 }
 
 app_install() {
     local version="${1:-$(app_version)}"
 
     utils:get_file \
-        "https://github.com/akavel/up/releases/download/$version/$APP_NAME" \
+        "$APP_URL/releases/download/$version/$APP_NAME" \
         "$SDD_TEMP_DIR/$APP_NAME"
-
+    
     app_remove
 
     install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
@@ -23,7 +26,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'akavel/up'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

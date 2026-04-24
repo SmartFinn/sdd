@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/gsamokovarov/jump"
+APP_DESC="Jump helps you navigate faster by learning your habits"
+
 app_info() {
-    utils:info "Jump helps you navigate faster by learning your habits"
+    utils:info
 }
 
 app_install() {
@@ -11,11 +14,11 @@ app_install() {
     local package="${APP_NAME}_linux_amd64_binary"
 
     utils:get_file \
-        "https://github.com/gsamokovarov/jump/releases/download/$version/$package" \
+        "$APP_URL/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$APP_NAME"
 
     utils:get_file \
-        "https://github.com/gsamokovarov/jump/archive/$version.tar.gz" \
+        "$APP_URL/archive/$version.tar.gz" \
         "$SDD_TEMP_DIR/$version.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
 
@@ -38,7 +41,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'gsamokovarov/jump'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

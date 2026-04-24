@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/git-bug/git-bug"
+APP_DESC="distributed, offline-first bug tracker embedded in git, with bridges"
+
 app_info() {
-    utils:info "distributed, offline-first bug tracker embedded in git, with bridges"
+    utils:info
 }
 
 app_install() {
@@ -11,11 +14,11 @@ app_install() {
     local package="${APP_NAME}_linux_amd64"
 
     utils:get_file \
-        "https://github.com/git-bug/git-bug/releases/download/$version/$package" \
+        "$APP_URL/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$APP_NAME"
 
     utils:get_file \
-        "https://github.com/git-bug/git-bug/archive/$version.tar.gz" \
+        "$APP_URL/archive/$version.tar.gz" \
         "$SDD_TEMP_DIR/$version.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
 
@@ -44,7 +47,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'git-bug/git-bug'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

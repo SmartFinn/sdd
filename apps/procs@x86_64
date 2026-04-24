@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/dalance/procs"
+APP_DESC="A modern replacement for ps written in Rust"
+
 app_info() {
-    utils:info "A modern replacement for ps written in Rust"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-${version}-$APP_ARCH-linux.zip"
 
     utils:get_file \
-        "https://github.com/dalance/procs/releases/download/$version/$package" \
+        "$APP_URL/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$package"
     utils:extract "$SDD_TEMP_DIR/$package"
 
@@ -26,7 +29,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'dalance/procs'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

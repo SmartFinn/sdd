@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/hrkfdn/ncspot"
+APP_DESC="Spotify client written in Rust, inspired by ncmpc and the likes"
+
 app_info() {
-    utils:info "Spotify client written in Rust, inspired by ncmpc and the likes"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="${APP_NAME}-$version-linux-${APP_ARCH}.tar.gz"
 
     utils:get_file \
-        "https://github.com/hrkfdn/ncspot/releases/download/$version/$package" \
+        "$APP_URL/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$package"
     utils:extract "$SDD_TEMP_DIR/$package"
 
@@ -25,7 +28,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'hrkfdn/ncspot'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

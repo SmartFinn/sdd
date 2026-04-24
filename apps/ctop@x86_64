@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/bcicen/ctop"
+APP_DESC="Top-like interface for container metrics"
+
 app_info() {
-    utils:info "Top-like interface for container metrics"
+    utils:info
 }
 
 app_install() {
@@ -11,9 +14,9 @@ app_install() {
     local package="${APP_NAME}-${version#v}-linux-amd64"
 
     utils:get_file \
-        "https://github.com/bcicen/ctop/releases/download/$version/$package" \
+        "$APP_URL/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$APP_NAME"
-
+    
     app_remove
 
     install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
@@ -24,7 +27,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'bcicen/ctop'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

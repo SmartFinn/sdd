@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/doronbehar/pistol"
+APP_DESC="General purpose file previewer designed for ranger, lf, nnn"
+
 app_info() {
-    utils:info "General purpose file previewer designed for ranger, lf, nnn"
+    utils:info
 }
 
 app_install() {
@@ -18,11 +21,11 @@ app_install() {
     fi
 
     utils:get_file \
-        "https://github.com/doronbehar/pistol/releases/download/$version/$package" \
+        "$APP_URL/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$APP_NAME"
 
     utils:get_file \
-        "https://github.com/doronbehar/pistol/releases/download/$version/$manpage_file" \
+        "$APP_URL/releases/download/$version/$manpage_file" \
         "$SDD_TEMP_DIR/$manpage_file"
 
     app_remove
@@ -38,7 +41,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'doronbehar/pistol'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

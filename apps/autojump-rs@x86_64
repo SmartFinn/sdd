@@ -2,10 +2,12 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/xen0n/autojump-rs"
+APP_DESC="A port of the wildly popular helper application autojump to Rust"
 ALT_APP_NAME="autojump"
 
 app_info() {
-    utils:info "A port of the wildly popular helper application autojump to Rust"
+    utils:info
 }
 
 app_install() {
@@ -14,12 +16,12 @@ app_install() {
     local package="$ALT_APP_NAME-$APP_ARCH-unknown-linux-musl"
 
     utils:get_file \
-        "https://github.com/xen0n/autojump-rs/releases/download/$version/$package.tar.gz" \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
 
     utils:get_file \
-        "https://github.com/xen0n/autojump-rs/archive/$version.tar.gz" \
+        "$APP_URL/archive/$version.tar.gz" \
         "$SDD_TEMP_DIR/$version.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
 
@@ -61,7 +63,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'xen0n/autojump-rs'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

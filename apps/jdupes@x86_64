@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://codeberg.org/jbruchon/jdupes"
+APP_DESC="A powerful duplicate file finder and an enhanced fork of 'fdupes'"
+
 app_info() {
-    utils:info "A powerful duplicate file finder and an enhanced fork of 'fdupes'"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="${APP_NAME}-${version#v}-linux-${APP_ARCH}"
 
     utils:get_file \
-        "https://codeberg.org/jbruchon/jdupes/releases/download/$version/$package.pkg.tar.xz" \
+        "$APP_URL/releases/download/$version/$package.pkg.tar.xz" \
         "$SDD_TEMP_DIR/$package.pkg.tar.xz"
     utils:extract "$SDD_TEMP_DIR/$package.pkg.tar.xz"
 
@@ -27,7 +30,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:gitea_latest_release 'jbruchon/jdupes' 'codeberg.org'
+    utils:gitea_latest_release "${APP_URL#https://codeberg.org/}" 'codeberg.org'
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

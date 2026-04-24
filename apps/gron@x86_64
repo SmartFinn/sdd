@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/tomnomnom/gron"
+APP_DESC="Make JSON greppable!"
+
 app_info() {
-    utils:info "Make JSON greppable!"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-linux-amd64-${version#v}"
 
     utils:get_file \
-        "https://github.com/tomnomnom/gron/releases/download/$version/$package.tgz" \
+        "$APP_URL/releases/download/$version/$package.tgz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -26,7 +29,7 @@ app_remove() {
 
 app_version() {
     # get latest pre-release
-    utils:github_releases 'tomnomnom/gron' | head -1
+    utils:github_releases "${APP_URL#https://github.com/}" | head -1
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

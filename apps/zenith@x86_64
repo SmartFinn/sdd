@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/bvaisvil/zenith"
+APP_DESC="like top or htop but with zoom-able charts, network, and disk usage"
+
 app_info() {
-    utils:info "like top or htop but with zoom-able charts, network, and disk usage"
+    utils:info
 }
 
 app_install() {
@@ -17,7 +20,7 @@ app_install() {
     fi
 
     utils:get_file \
-        "https://github.com/bvaisvil/zenith/releases/download/$version/$package" \
+        "$APP_URL/releases/download/$version/$package" \
         "$SDD_TEMP_DIR/$package"
     utils:extract "$SDD_TEMP_DIR/$package"
 
@@ -31,7 +34,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'bvaisvil/zenith'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

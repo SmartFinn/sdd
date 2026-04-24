@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/Wilfred/difftastic"
+APP_DESC="a structural diff that understands syntax"
+
 app_info() {
-    utils:info "a structural diff that understands syntax"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-$APP_ARCH-unknown-linux-gnu"
 
     utils:get_file \
-        "https://github.com/Wilfred/difftastic/releases/download/$version/$package.tar.gz" \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -25,7 +28,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'Wilfred/difftastic'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

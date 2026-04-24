@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/eza-community/eza"
+APP_DESC="A modern, maintained replacement for 'ls'"
+
 app_info() {
-    utils:info "A modern, maintained replacement for 'ls'"
+    utils:info
 }
 
 app_install() {
@@ -12,7 +15,7 @@ app_install() {
     local _version="${version#v}"
 
     utils:get_file \
-        "https://github.com/eza-community/eza/releases/download/$version/$package".tar.gz \
+        "$APP_URL/releases/download/$version/$package".tar.gz \
         "$SDD_TEMP_DIR/$package".tar.gz
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -25,12 +28,12 @@ app_install() {
     # Install extras
     if utils:compare_versions "$_version" ge "0.18.13"; then
         utils:get_file \
-            "https://github.com/eza-community/eza/releases/download/$version/completions-$_version".tar.gz \
+            "$APP_URL/releases/download/$version/completions-$_version".tar.gz \
             "$SDD_TEMP_DIR/completions-$_version".tar.gz
         utils:extract "$SDD_TEMP_DIR/completions-$_version".tar.gz
 
         utils:get_file \
-            "https://github.com/eza-community/eza/releases/download/$version/man-$_version".tar.gz \
+            "$APP_URL/releases/download/$version/man-$_version".tar.gz \
             "$SDD_TEMP_DIR/man-$_version".tar.gz
         utils:extract "$SDD_TEMP_DIR/man-$_version".tar.gz
 
@@ -62,7 +65,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'eza-community/eza'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

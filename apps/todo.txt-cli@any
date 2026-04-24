@@ -2,10 +2,13 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/todotxt/todo.txt-cli"
+APP_DESC="A simple shell script for managing your todo.txt file"
+
 ALT_APP_NAME="todo.sh"
 
 app_info() {
-    utils:info "A simple shell script for managing your todo.txt file"
+    utils:info
 }
 
 app_install() {
@@ -14,7 +17,7 @@ app_install() {
     local todo_config="${XDG_CONFIG_HOME:-$HOME/.config}/todo/config"
 
     utils:get_file \
-        "https://github.com/todotxt/todo.txt-cli/archive/$version.tar.gz" \
+        "$APP_URL/archive/$version.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -53,7 +56,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'todotxt/todo.txt-cli'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

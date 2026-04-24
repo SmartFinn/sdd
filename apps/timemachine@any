@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/cytopia/linux-timemachine"
+APP_DESC="Rsync-based OSX-like time machine"
+
 app_info() {
-    utils:info "Rsync-based OSX-like time machine"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="linux-$APP_NAME-${version#v}"
 
     utils:get_file \
-        "https://github.com/cytopia/linux-timemachine/archive/$version.tar.gz" \
+        "$APP_URL/archive/$version.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -27,7 +30,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'cytopia/linux-timemachine'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

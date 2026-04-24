@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/aristocratos/btop"
+APP_DESC="A monitor of resources"
+
 app_info() {
-    utils:info "A monitor of resources"
+    utils:info
 }
 
 app_install() {
@@ -17,7 +20,7 @@ app_install() {
     fi
 
     utils:get_file \
-        "https://github.com/aristocratos/btop/releases/download/$version/$package.tbz" \
+        "$APP_URL/releases/download/$version/$package.tbz" \
         "$SDD_TEMP_DIR/$package.tbz"
     utils:extract "$SDD_TEMP_DIR/$package.tbz"
     cd "$SDD_TEMP_DIR/$APP_NAME" || exit 1
@@ -49,7 +52,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_tag 'aristocratos/btop'
+    utils:github_latest_tag "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

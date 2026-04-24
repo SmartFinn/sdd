@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/jarun/nnn"
+APP_DESC="a full-featured terminal file manager"
+
 app_info() {
-    utils:info "a full-featured terminal file manager"
+    utils:info
 }
 
 app_install() {
@@ -11,12 +14,12 @@ app_install() {
     local package="$APP_NAME-static-${version#v}.${APP_ARCH}"
 
     utils:get_file \
-        "https://github.com/jarun/nnn/releases/download/$version/$package.tar.gz" \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
     utils:get_file \
-        "https://github.com/jarun/nnn/archive/$version.tar.gz" \
+        "$APP_URL/archive/$version.tar.gz" \
         "$SDD_TEMP_DIR/$version.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
 
@@ -51,7 +54,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'jarun/nnn'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

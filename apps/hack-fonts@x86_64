@@ -2,11 +2,14 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/source-foundry/Hack"
+APP_DESC="A typeface designed for source code. Patched with Nerd Fonts iconics"
+
 ALT_APP_NAME="Hack"
 SDD_FONTS_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/fonts"
 
 app_info() {
-    utils:info "A typeface designed for source code. Patched with Nerd Fonts iconics"
+    utils:info
 }
 
 app_install() {
@@ -14,7 +17,7 @@ app_install() {
     local package="$ALT_APP_NAME-$version-ttf"
 
     utils:get_file \
-        "https://github.com/source-foundry/Hack/releases/download/$version/$package".tar.gz \
+        "$APP_URL/releases/download/$version/$package".tar.gz \
         "$SDD_TEMP_DIR/$version.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
 
@@ -44,7 +47,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'source-foundry/Hack'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

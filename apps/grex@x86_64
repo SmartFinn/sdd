@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/pemistahl/grex"
+APP_DESC="A command-line tool for generating regular expressions from user-provided test cases"
+
 app_info() {
-    utils:info "A command-line tool for generating regular expressions from user-provided test cases"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-$version-$APP_ARCH-unknown-linux-musl"
 
     utils:get_file \
-        "https://github.com/pemistahl/grex/releases/download/$version/$package.tar.gz" \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -25,7 +28,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'pemistahl/grex'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

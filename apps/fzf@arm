@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/junegunn/fzf"
+APP_DESC="A command-line fuzzy finder"
+
 app_info() {
-    utils:info "A command-line fuzzy finder"
+    utils:info
 }
 
 app_install() {
@@ -11,12 +14,12 @@ app_install() {
     local package="$APP_NAME-${version#v}-linux_armv7"
 
     utils:get_file \
-        "https://github.com/junegunn/fzf/releases/download/$version/$package.tar.gz" \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
-    utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
     utils:get_file \
-        "https://github.com/junegunn/fzf/archive/$version.tar.gz" \
+        "$APP_URL/archive/$version.tar.gz" \
         "$SDD_TEMP_DIR/$version.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
 
@@ -63,7 +66,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'junegunn/fzf'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

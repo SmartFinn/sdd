@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://johnvansickle.com/ffmpeg"
+APP_DESC="FFmpeg Static Builds"
+
 app_info() {
-    utils:info "FFmpeg Static Builds"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-$version-amd64-static"
 
     utils:get_file \
-        "https://johnvansickle.com/ffmpeg/releases/$package.tar.xz" \
+        "$APP_URL/releases/$package.tar.xz" \
         "$SDD_TEMP_DIR/$package.tar.xz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.xz
 

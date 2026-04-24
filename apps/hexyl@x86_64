@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/sharkdp/hexyl"
+APP_DESC="A command-line hex viewer"
+
 app_info() {
-    utils:info "A command-line hex viewer"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="${APP_NAME}-${version}-${APP_ARCH}-unknown-linux-musl"
 
     utils:get_file \
-        "https://github.com/sharkdp/hexyl/releases/download/$version/$package".tar.gz \
+        "$APP_URL/releases/download/$version/$package".tar.gz \
         "$SDD_TEMP_DIR/$package".tar.gz
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -33,7 +36,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'sharkdp/hexyl'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

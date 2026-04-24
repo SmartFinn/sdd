@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/docker/cli"
+APP_DESC="Docker CLI (client only)"
+
 app_info() {
-    utils:info "Docker CLI (client only)"
+    utils:info
 }
 
 app_install() {
@@ -42,7 +45,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_tags 'docker/cli' | sort -rn | grep -m1 -v 'rc\|beta\|tp'
+    utils:github_tags "${APP_URL#https://github.com/}" | sort -rn | grep -m1 -v 'rc\|beta\|tp'
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

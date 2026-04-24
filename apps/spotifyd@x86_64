@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/Spotifyd/spotifyd"
+APP_DESC="An open source Spotify client running as a UNIX daemon"
+
 app_info() {
-    utils:info "An open source Spotify client running as a UNIX daemon"
+    utils:info
 }
 
 app_install() {
@@ -16,12 +19,12 @@ app_install() {
     fi
 
     utils:get_file \
-        "https://github.com/Spotifyd/spotifyd/releases/download/$version/$package.tar.gz" \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package.tar.gz"
 
     utils:get_file \
-        "https://github.com/Spotifyd/spotifyd/archive/$version.tar.gz" \
+        "$APP_URL/archive/$version.tar.gz" \
         "$SDD_TEMP_DIR/$version.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
 
@@ -54,7 +57,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'Spotifyd/spotifyd'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

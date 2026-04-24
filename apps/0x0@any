@@ -2,15 +2,18 @@
 
 set -euo pipefail
 
+APP_DESC="curl wrapper script to upload files to 0x0.st"
+APP_URL="https://github.com/Calinou/0x0"
+
 app_info() {
-    utils:info "curl wrapper script to upload files to 0x0.st"
+    utils:info
 }
 
 app_install() {
     local version="${1:-$(app_version)}"
 
     utils:get_file \
-        "https://github.com/Calinou/0x0/archive/master.tar.gz" \
+        "$APP_URL/archive/master.tar.gz" \
         "$SDD_TEMP_DIR/$APP_NAME.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$APP_NAME".tar.gz
 
@@ -26,7 +29,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_commit_hash 'Calinou/0x0'
+    utils:github_latest_commit_hash "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/dundee/gdu"
+APP_DESC="Pretty fast disk usage analyzer written in Go"
+
 app_info() {
-    utils:info "Pretty fast disk usage analyzer written in Go"
+    utils:info
 }
 
 app_install() {
@@ -11,12 +14,12 @@ app_install() {
     local package="${APP_NAME}_linux_amd64"
 
     utils:get_file \
-        "https://github.com/dundee/gdu/releases/download/$version/$package.tgz" \
+        "$APP_URL/releases/download/$version/$package.tgz" \
         "$SDD_TEMP_DIR/$package.tgz"
     utils:extract "$SDD_TEMP_DIR/$package".tgz
 
     utils:get_file \
-        "https://github.com/dundee/gdu/archive/$version.tar.gz" \
+        "$APP_URL/archive/$version.tar.gz" \
         "$SDD_TEMP_DIR/$version.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$version.tar.gz"
 
@@ -35,7 +38,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'dundee/gdu'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/charmbracelet/glow"
+APP_DESC="Render markdown on the CLI, with pizzazz!"
+
 app_info() {
-    utils:info "Render markdown on the CLI, with pizzazz!"
+    utils:info
 }
 
 app_install() {
@@ -15,7 +18,7 @@ app_install() {
     fi
 
     utils:get_file \
-        "https://github.com/charmbracelet/glow/releases/download/$version/$package.tar.gz" \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -50,7 +53,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'charmbracelet/glow'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/burntsushi/ripgrep"
+APP_DESC="Recursively searches directories for a regex pattern"
+
 app_info() {
-    utils:info "Recursively searches directories for a regex pattern"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-$version-$APP_ARCH-unknown-linux-musl"
 
     utils:get_file \
-        "https://github.com/burntsushi/ripgrep/releases/download/$version/$package.tar.gz" \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -47,7 +50,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'burntsushi/ripgrep'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

@@ -2,11 +2,14 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/ryanoasis/nerd-fonts"
+APP_DESC="Nerd Font Symbols only"
+
 ALT_APP_NAME="NerdFontsSymbolsOnly"
 SDD_FONTS_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/fonts"
 
 app_info() {
-    utils:info "Nerd Font Symbols only"
+    utils:info
 }
 
 app_install() {
@@ -14,7 +17,7 @@ app_install() {
     local package="NerdFontsSymbolsOnly"
 
     utils:get_file \
-        "https://github.com/ryanoasis/nerd-fonts/releases/download/$version/$package".zip \
+        "$APP_URL/releases/download/$version/$package".zip \
         "$SDD_TEMP_DIR/$version.zip"
     utils:extract "$SDD_TEMP_DIR/$version.zip"
 
@@ -48,7 +51,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'ryanoasis/nerd-fonts'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

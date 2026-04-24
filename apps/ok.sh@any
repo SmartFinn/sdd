@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/whiteinge/ok.sh"
+APP_DESC="A Bourne shell GitHub API client library"
+
 app_info() {
-    utils:info "A Bourne shell GitHub API client library"
+    utils:info
 }
 
 app_install() {
@@ -11,7 +14,7 @@ app_install() {
     local package="$APP_NAME-$version"
 
     utils:get_file \
-        "https://github.com/whiteinge/ok.sh/archive/$version.tar.gz" \
+        "$APP_URL/archive/$version.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
     utils:extract "$SDD_TEMP_DIR/$package".tar.gz
 
@@ -26,7 +29,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'whiteinge/ok.sh'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"

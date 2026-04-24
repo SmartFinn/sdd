@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
+APP_URL="https://github.com/mitmproxy/mitmproxy"
+APP_DESC="An interactive TLS-capable intercepting HTTP proxy for software developers"
+
 app_info() {
-    utils:info "An interactive TLS-capable intercepting HTTP proxy for software developers"
+    utils:info
 }
 
 app_install() {
@@ -37,7 +40,7 @@ app_remove() {
 }
 
 app_version() {
-    utils:github_latest_release 'mitmproxy/mitmproxy'
+    utils:github_latest_release "${APP_URL#https://github.com/}"
 }
 
 SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
