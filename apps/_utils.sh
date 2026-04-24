@@ -131,6 +131,15 @@ utils:gitea_releases() {
         sed -n 's%.*/releases/tag/\([^"]\+\)">.*%\1%p'
 }
 
+utils:forgejo_releases() {
+    local repo="${1?}"
+    local forgejo_host="${2:-code.forgejo.org}"
+
+    # Get releases from Forgejo web interface to avoid TOKEN requires
+    curl -A "Mozilla/5.0" -sSL "https://$forgejo_host/$repo/releases.rss" |
+        sed -n 's%.*/releases/tag/\([^>]\+\)<.*%\1%p'
+}
+
 utils:parser() {
     local cmd="${1:-}"
 
