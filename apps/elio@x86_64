@@ -25,7 +25,7 @@ app_install() {
 
     # Copy launcher
     install -vD -m644 "packaging/linux/$APP_NAME.desktop" \
-        "${XDG_HOME_DATA:-$HOME/.local/share}/applications/$APP_NAME.desktop"
+        "${XDG_HOME_DATA:-$HOME/.local/share}/applications/$APP_NAME.desktop" >&2
 
     # Copy icons
     for s in 48x48 128x128 256x256 512x512; do
