@@ -14,7 +14,10 @@ app_install() {
     local package
     local _bin_path
 
-    if utils:compare_versions "$version" ge 'v0.6.3'; then
+    if utils:compare_versions "$version" ge 'v1.2.0'; then
+        package="${APP_NAME}-linux-${APP_ARCH}"
+        _bin_path=""
+    elif utils:compare_versions "$version" ge 'v0.6.3'; then
         package="${APP_NAME}_${version#v}_Linux_${APP_ARCH}"
         _bin_path="$package"
     else
