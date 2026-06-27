@@ -13,16 +13,18 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package
 
-    if utils:compare_versions "$version" ge "v1.4.6"; then
-        package="$APP_NAME-$APP_ARCH-unknown-linux-musl"
+    if utils:compare_versions "$version" ge "v1.4.7"; then
+        package="$APP_NAME-$APP_ARCH-unknown-linux-musl.tar.gz"
+    elif utils:compare_versions "$version" eq "v1.4.6"; then
+        package="$APP_NAME-$APP_ARCH-unknown-linux-musl.tbz"
     else
-        package="$APP_NAME-$APP_ARCH-linux-musl"
+        package="$APP_NAME-$APP_ARCH-linux-musl.tbz"
     fi
 
     utils:get_file \
-        "$APP_URL/releases/download/$version/$package.tbz" \
-        "$SDD_TEMP_DIR/$package.tbz"
-    utils:extract "$SDD_TEMP_DIR/$package.tbz"
+        "$APP_URL/releases/download/$version/$package" \
+        "$SDD_TEMP_DIR/$package"
+    utils:extract "$SDD_TEMP_DIR/$package"
     cd "$SDD_TEMP_DIR/$APP_NAME" || exit 1
 
     app_remove
