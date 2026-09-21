@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+APP_URL="https://github.com/abhixdd/ghgrab"
+APP_DESC="A simple, pretty terminal tool that lets you browse and download files from GitHub, etc"
+
+app_info() {
+    utils:info
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="${APP_NAME}-linux"
+
+    utils:get_file \
+        "$APP_URL/releases/download/$version/$package" \
+        "$SDD_TEMP_DIR/$APP_NAME"
+
+    app_remove
+
+    install -vD -m755 "$SDD_TEMP_DIR/$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_release "${APP_URL#https://github.com/}"
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
