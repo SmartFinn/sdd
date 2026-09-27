@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+APP_URL="https://github.com/Giammarco-Ferranti/deja"
+APP_DESC="Predictive inline shell autosuggestions for zsh. Go daemon, no TUI, no sync"
+
+app_info() {
+    utils:info
+}
+
+app_install() {
+    local version="${1:-$(app_version)}"
+    local package="${APP_NAME}_${version#[vV]}_linux_amd64"
+
+    utils:get_file \
+        "$APP_URL/releases/download/$version/$package.tar.gz" \
+        "$SDD_TEMP_DIR/$package.tar.gz"
+    utils:extract "$SDD_TEMP_DIR/$package".tar.gz
+
+    cd "$SDD_TEMP_DIR" || exit 1
+
+    app_remove
+
+    install -vD -m755 "$APP_NAME" "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_remove() {
+    rm -vf "$SDD_BIN_DIR/$APP_NAME" >&2
+}
+
+app_version() {
+    utils:github_latest_release "${APP_URL#https://github.com/}"
+}
+
+SCRIPT_DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+
+# shellcheck source=./_utils.sh
+source "$SCRIPT_DIR/_utils.sh"
+
+utils:parser "$@"
