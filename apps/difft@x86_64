@@ -13,6 +13,12 @@ app_install() {
     local version="${1:-$(app_version)}"
     local package="$APP_NAME-$APP_ARCH-unknown-linux-gnu"
 
+    if utils:compare_versions "$version" ge "0.70.0"; then
+        package="$APP_NAME-$version-$APP_ARCH-unknown-linux-gnu"
+    else
+        package="$APP_NAME-$APP_ARCH-unknown-linux-gnu"
+    fi
+
     utils:get_file \
         "$APP_URL/releases/download/$version/$package.tar.gz" \
         "$SDD_TEMP_DIR/$package.tar.gz"
