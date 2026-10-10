@@ -20,7 +20,9 @@ app_install() {
 
     app_remove
 
-    if [ -d "$SDD_TEMP_DIR/$package/$APP_NAME-${version#v}" ]; then
+    if [ -d "$SDD_TEMP_DIR/$APP_NAME-${version}" ]; then
+        cd "$SDD_TEMP_DIR/$APP_NAME-${version}"
+    elif [ -d "$SDD_TEMP_DIR/$package/$APP_NAME-${version#v}" ]; then
         cd "$SDD_TEMP_DIR/$package/$APP_NAME-${version#v}"
     elif [ -d "$SDD_TEMP_DIR/$package/$APP_NAME" ]; then
         cd "$SDD_TEMP_DIR/$package/$APP_NAME"
